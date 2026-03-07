@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+@theme {
+  --color-agentbase-50: #f0fdf4;
+  --color-agentbase-100: #dcfce7;
+  --color-agentbase-500: #5c45fd; /* The primary blue-purple color from screenshot */
+  --color-agentbase-600: #4a34e8;
+  --color-agentbase-700: #3b28c5;
+
+  --color-risk-50: #fff7ed;
+  --color-risk-100: #ffedd5;
+  --color-risk-500: #f97316; /* Orange for incident */
+  --color-risk-600: #ea580c;
+
+  --color-market-50: #f0fdf4;
+  --color-market-100: #dcfce7;
+  --color-market-500: #22c55e; /* Green for market */
+  --color-market-600: #16a34a;
+
+  --font-sans: "Inter", system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background-color: #fafafa; /* Light gray background */
+  color: #0f172a; /* Slate 900 for text */
+}
+
+/* Glassmorphism / UI utilities for light theme */
+.card-shadow {
+  box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.glass-header {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
