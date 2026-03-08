@@ -41,7 +41,7 @@ def init_historical_incidents():
             return # Already initialized
             
         api_key = os.getenv("GEMINI_API_KEY")
-        if not api_key or api_key == "your_gemini_api_key_here":
+        if not api_key:
             logger.warning("No Gemini API key, using mock embeddings for Chroma initialization.")
             # Chroma requires vectors, we'll just add some mock vectors if no key
             collection.add(
@@ -53,11 +53,31 @@ def init_historical_incidents():
             return
 
         client = _get_gemini_client()
-        docs = [
-            "We had a major Auth Outage last month where the SSO Gateway timed out and caused 504 errors.",
-            "The User DB connection pool was exhausted, preventing logins.",
-            "Upstream Identity Provider Failure caused intermittent login issues."
-        ]
+        
+        # Load from mock_incident.pdf
+        pdf_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "mock_incident.pdf")
+        with open(pdf_path, "rb") as f:
+            pdf_text = parse_pdf(f.read())
+            
+        # Basic chunking by "INCIDENT:"
+        incidents_raw = pdf_text.split("INCIDENT:")
+        docs = []
+        metadatas = []
+        ids = []
+        
+        for i, snippet in enumerate(incidents_raw):
+            snippet = snippet.strip()
+            if not snippet:
+                continue
+            
+            # The actual title is the first line
+            lines = snippet.split("\n")
+            title = lines[0].strip() if lines else "Unknown Incident"
+            full_text = "INCIDENT: " + snippet
+            
+            docs.append(full_text)
+            metadatas.append({"cause": title})
+            ids.append(f"hist_real_{i}")
         
         embeddings = []
         for doc in docs:
@@ -69,28 +89,34 @@ def init_historical_incidents():
             
         collection.add(
             documents=docs,
-            metadatas=[{"cause": "SSO Gateway"}, {"cause": "DB Auth"}, {"cause": "Upstream IdP"}],
-            ids=["hist_1", "hist_2", "hist_3"],
+            metadatas=metadatas,
+            ids=ids,
             embeddings=embeddings
         )
             
     except Exception as e:
         logger.error(f"Error initializing ChromaDB: {e}")
 
-def retrieve_similar_incidents(query: str, n_results: int = 2) -> list[str]:
+from typing import Any
+
+def retrieve_similar_incidents(query: str, n_results: int = 3) -> list[dict[str, Any]]:
     """
-    Retrieves similar past incidents from Chroma using Gemini embeddings.
+    Retrieves top 3 similar past incidents from Chroma using Gemini embeddings
+    along with their similarity scores.
     """
     try:
         collection = chroma_client.get_collection(name="historical_incidents")
         
         api_key = os.getenv("GEMINI_API_KEY")
-        if not api_key or api_key == "your_gemini_api_key_here":
+        if not api_key:
             results = collection.query(
                 query_embeddings=[[0.1] * 768], # Mock query
                 n_results=n_results
             )
-            return results.get("documents", [[]])[0]
+            distances = results.get("distances", [[1.0]])[0]
+            docs = results.get("documents", [[]])[0]
+            # Return combined docs + distances so graph can detect "no match"
+            return [{"doc": d, "distance": dist} for d, dist in zip(docs, distances)]
 
         client = _get_gemini_client()
         result = client.models.embed_content(
@@ -103,7 +129,9 @@ def retrieve_similar_incidents(query: str, n_results: int = 2) -> list[str]:
             query_embeddings=[query_embedding],
             n_results=n_results
         )
-        return results.get("documents", [[]])[0]
+        distances = results.get("distances", [[1.0]])[0]
+        docs = results.get("documents", [[]])[0]
+        return [{"doc": d, "distance": dist} for d, dist in zip(docs, distances)]
         
     except Exception as e:
         logger.error(f"Retrieval error: {e}")
