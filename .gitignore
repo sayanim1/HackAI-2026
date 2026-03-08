@@ -33,6 +33,7 @@ ENV/
 .env
 .env.local
 .env.*
+api_secrets.py
 
 # Databases
 *.sqlite3
@@ -45,5 +46,6 @@ chroma_db/
 # OS
 .DS_Store
 Thumbs.db
+backend/chroma_db/
 
 __pycache__/

@@ -44,7 +44,11 @@ class SummaryOutput(BaseModel):
     engineering_summary: str = Field(description="A formal engineering brief detailing the incident.")
 
 def _get_gemini_client() -> genai.Client:
-    api_key = os.getenv("GEMINI_API_KEY")
+    try:
+        from api_secrets import GEMINI_API_KEY
+        api_key = GEMINI_API_KEY
+    except ImportError:
+        api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         api_key = "MOCK_KEY"
     return genai.Client(api_key=api_key)
@@ -53,7 +57,12 @@ def _get_gemini_client() -> genai.Client:
 def extraction_node(state: IncidentState) -> Dict:
     text = state.get("raw_text", "")
     
-    api_key = os.getenv("GEMINI_API_KEY")
+    try:
+        from api_secrets import GEMINI_API_KEY
+        api_key = GEMINI_API_KEY
+    except ImportError:
+        api_key = os.getenv("GEMINI_API_KEY")
+
     if not api_key:
         return {
             "affected_systems": ["Mock System A", "Mock System B"],
@@ -122,7 +131,12 @@ def root_cause_node(state: IncidentState) -> Dict:
     historical = state.get("historical_context", [])
     is_new = state.get("is_new_incident", False)
     
-    api_key = os.getenv("GEMINI_API_KEY")
+    try:
+        from api_secrets import GEMINI_API_KEY
+        api_key = GEMINI_API_KEY
+    except ImportError:
+        api_key = os.getenv("GEMINI_API_KEY")
+
     if not api_key:
         return {"root_causes": [{"cause": "Mock DB failure", "confidence": 85}]}
 
@@ -157,7 +171,12 @@ def action_planner_node(state: IncidentState) -> Dict:
     systems = state.get("affected_systems", [])
     is_new = state.get("is_new_incident", False)
     
-    api_key = os.getenv("GEMINI_API_KEY")
+    try:
+        from api_secrets import GEMINI_API_KEY
+        api_key = GEMINI_API_KEY
+    except ImportError:
+        api_key = os.getenv("GEMINI_API_KEY")
+
     if not api_key:
         return {"next_actions": ["1. Check mock logs", "2. Page on-call"]}
 
@@ -204,7 +223,12 @@ def summarizer_node(state: IncidentState) -> Dict:
     # Optional prefix if new
     prefix_msg = "🚨 This appears to be a new incident type. The following are estimated predictions.\n\n" if is_new else ""
     
-    api_key = os.getenv("GEMINI_API_KEY")
+    try:
+        from api_secrets import GEMINI_API_KEY
+        api_key = GEMINI_API_KEY
+    except ImportError:
+        api_key = os.getenv("GEMINI_API_KEY")
+
     if not api_key:
         final_response["engineering_summary"] = "Mock Engineering Summary:\nINCIDENT: ...\nTIME: ..."
         return {"engineering_summary": final_response["engineering_summary"], "final_response": final_response}
