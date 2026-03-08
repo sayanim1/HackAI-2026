@@ -23,6 +23,7 @@ class IncidentState(TypedDict):
     root_causes: List[Dict[str, Any]]
     next_actions: List[str]
     engineering_summary: str
+    is_new_incident: bool
     final_response: Dict[str, Any] | None
 
 # Pydantic schemas for Gemini Structured Output Output
@@ -53,7 +54,7 @@ def extraction_node(state: IncidentState) -> Dict:
     text = state.get("raw_text", "")
     
     api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key or api_key == "your_gemini_api_key_here":
+    if not api_key:
         return {
             "affected_systems": ["Mock System A", "Mock System B"],
             "timeline": "Mock Timeline: 12:00-12:15",
@@ -94,18 +95,44 @@ def rag_node(state: IncidentState) -> Dict:
     incident_type = state.get("incident_type", "")
     query = f"{incident_type} {symptoms}"
     
-    historical = retrieve_similar_incidents(query)
-    return {"historical_context": historical}
+    historical_results = retrieve_similar_incidents(query)
+    
+    # Check similarity to determine if this is a "new incident".
+    # Distance in Chroma typically represents L2 or Cosine distance (0.0 means perfect match).
+    # We convert it to a rough similarity score (1.0 = 100% similar)
+    context_docs = []
+    is_new_incident = True
+    
+    if historical_results:
+        best_distance = historical_results[0]["distance"]
+        similarity = 1.0 - best_distance
+        
+        # Threshold: Calculate if similarities >= 70%
+        if similarity >= 0.70:
+            is_new_incident = False
+            
+        context_docs = [res["doc"] for res in historical_results]
+
+    return {"historical_context": context_docs, "is_new_incident": is_new_incident}
 
 def root_cause_node(state: IncidentState) -> Dict:
     text = state.get("raw_text", "")
     historical = state.get("historical_context", [])
+    is_new = state.get("is_new_incident", False)
     
     api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key or api_key == "your_gemini_api_key_here":
+    if not api_key:
         return {"root_causes": [{"cause": "Mock DB failure", "confidence": 85}]}
 
-    prompt = f"Based on the following incident report:\n{text}\n\nAnd these similar past incidents:\n{historical}\n\nDetermine the most likely root causes and assign a confidence percentage to each."
+    prompt = f"Based on the following incident report:\n{text}\n\n"
+    if is_new:
+        prompt += "NOTE: This appears to be a NEW incident with no strong historical matches. However, you should still determine the most likely possible root causes based purely on the reported text.\n\n"
+        if historical:
+             prompt += f"For loose reference, here are some past incidents:\n{historical}\n\n"
+    else:
+        prompt += f"And these similar past incidents:\n{historical}\n\n"
+        
+    prompt += "Determine the most likely root causes and assign a confidence percentage to each."
     client = _get_gemini_client()
     
     try:
@@ -126,12 +153,16 @@ def root_cause_node(state: IncidentState) -> Dict:
 def action_planner_node(state: IncidentState) -> Dict:
     causes = state.get("root_causes", [])
     systems = state.get("affected_systems", [])
+    is_new = state.get("is_new_incident", False)
     
     api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key or api_key == "your_gemini_api_key_here":
+    if not api_key:
         return {"next_actions": ["1. Check mock logs", "2. Page on-call"]}
 
-    prompt = f"Given these potential root causes: {causes}\nAnd affected systems: {systems}\n\nDetermine an ordered list of recommended next actions to triage and resolve the issue."
+    prompt = f"Given these potential root causes: {causes}\nAnd affected systems: {systems}\n\n"
+    if is_new:
+         prompt += "NOTE: This is considered a NEW INCIDENT type, so please recommend standard initial triage steps and safely general actions since there is no established playbook for this exactly.\n\n"
+    prompt += "Determine an ordered list of recommended next actions to triage and resolve the issue."
     client = _get_gemini_client()
     
     try:
@@ -155,6 +186,7 @@ def summarizer_node(state: IncidentState) -> Dict:
     symptoms = state.get("symptoms", [])
     severity = state.get("severity", "")
     incident_type = state.get("incident_type", "")
+    is_new = state.get("is_new_incident", False)
     
     # Format the dictionary response for the frontend
     final_response = {
@@ -163,15 +195,23 @@ def summarizer_node(state: IncidentState) -> Dict:
         "timeline": timeline,
         "affected_systems": systems,
         "root_causes": state.get("root_causes", []),
-        "next_actions": state.get("next_actions", [])
+        "next_actions": state.get("next_actions", []),
+        "is_new_incident": is_new
     }
     
+    # Optional prefix if new
+    prefix_msg = "🚨 This appears to be a new incident type. The following are estimated predictions.\n\n" if is_new else ""
+    
     api_key = os.getenv("GEMINI_API_KEY")
-    if not api_key or api_key == "your_gemini_api_key_here":
+    if not api_key:
         final_response["engineering_summary"] = "Mock Engineering Summary:\nINCIDENT: ...\nTIME: ..."
         return {"engineering_summary": final_response["engineering_summary"], "final_response": final_response}
 
-    prompt = f"Draft an auto-generated engineering summary brief for an incident. Details:\nType: {incident_type}\nSeverity: {severity}\nTimeline: {timeline}\nAffected systems: {systems}\nSymptoms: {symptoms}\n\nInclude sections for INCIDENT, TIME, PRIORITY, OWNER (guess based on type), SYMPTOMS, and IMPACT."
+    prompt = f"Draft an auto-generated engineering summary brief for an incident.\n"
+    if is_new:
+        prompt += f"IMPORTANT: Include a strong disclaimer at the top stating this is a NEW INCIDENT and the causes/actions are predicted.\n"
+    
+    prompt += f"Details:\nType: {incident_type}\nSeverity: {severity}\nTimeline: {timeline}\nAffected systems: {systems}\nSymptoms: {symptoms}\n\nInclude sections for INCIDENT, TIME, PRIORITY, OWNER (guess based on type), SYMPTOMS, and IMPACT."
     client = _get_gemini_client()
     
     try:
@@ -185,6 +225,8 @@ def summarizer_node(state: IncidentState) -> Dict:
         )
         data = json.loads(response.text)
         summary = data.get("engineering_summary", "Summary unavailable.")
+        if is_new and not summary.startswith("🚨"):
+             summary = prefix_msg + summary
         final_response["engineering_summary"] = summary
         return {"engineering_summary": summary, "final_response": final_response}
     except Exception as e:

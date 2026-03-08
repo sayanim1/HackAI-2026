@@ -1,5 +1,5 @@
 from fastapi import APIRouter, UploadFile, File
-from ..agents.incident.tools import parse_pdf
+from ..agents.incident.tools import parse_pdf, init_historical_incidents
 from ..agents.incident.graph import incident_app
 
 router = APIRouter()
@@ -9,6 +9,9 @@ async def analyze_incident_report(file: UploadFile = File(...)):
     # Read PDF text
     file_bytes = await file.read()
     raw_text = parse_pdf(file_bytes)
+    
+    # Initialize the database so ChromaDB exists
+    init_historical_incidents()
     
     initial_state = {
         "raw_text": raw_text
