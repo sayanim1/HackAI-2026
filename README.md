@@ -1,0 +1,372 @@
+# NexusFlow — Real-Time Intelligence & Decision Signal Platform
+
+> *"Don't just read the noise. Understand the signal."*
+
+[![Python](https://img.shields.io/badge/Python-3.12-blue)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.111-green)](https://fastapi.tiangolo.com)
+[![LangGraph](https://img.shields.io/badge/LangGraph-Multi--Agent-orange)](https://langchain-ai.github.io/langgraph)
+[![Gemini](https://img.shields.io/badge/Gemini-1.5%20Flash-purple)](https://ai.google.dev)
+
+---
+
+## The Problem
+
+Modern organizations are drowning in unstructured text — financial news, system
+logs, incident reports, procurement data, market feeds. The challenge is not
+collecting this data. The challenge is converting it into a **reliable,
+actionable signal** fast enough to matter.
+
+- A portfolio manager needs to know if a Fed announcement moves their position
+  before the market opens.
+- An SRE needs to know if five login errors in three minutes mean a system-wide
+  outage before customers start calling.
+- A procurement officer needs to know if port congestion in Shanghai affects
+  their supply chain today, not next week.
+- An investor needs a sector-wide morning briefing without reading 200 articles.
+
+**NexusFlow solves this.** It is a one-stop, real-time intelligence platform
+that ingests raw text from live data sources — news feeds, incident logs,
+procurement reports — and produces structured, quantified decision signals
+using a multi-agent AI pipeline. It also proactively pushes **twice-daily
+sector intelligence alerts** so decisions never wait for a human to go looking.
+
+---
+
+## Track Relevance
+
+> *"Can we convert text into a reliable signal that helps make better decisions?"*
+
+| Track Requirement | How NexusFlow Addresses It |
+|---|---|
+| Raw text as input | Live news headlines, incident `.txt` files, procurement reports |
+| Meaningful signal output | BUY/SELL/HOLD, Severity Index (0–100), Index Score, Sector Score |
+| Real-world decision support | Trade recommendations, incident triage, supply chain alerts, sector digests |
+| Full pipeline | Ingest → Classify → Extract → Decide → Visualize → Alert |
+| Scale | Multi-source, multi-domain, multi-sector simultaneously |
+| Proactive intelligence | Twice-daily automated alerts without user prompting |
+
+---
+
+## What NexusFlow Does
+
+NexusFlow has **four intelligent pipelines**, each targeting a high-stakes
+real-world domain:
+
+---
+
+### 📈 1. Market Intelligence Agent
+**Problem:** Traders and analysts read hundreds of news articles daily to
+form a market view. Most signals are buried in noise.
+
+**Solution:** A conversational AI agent that accepts natural language questions
+about any stock or sector. It fetches live news, analyzes sentiment like a
+Wall Street analyst, pulls real-time price data, and returns a structured
+BUY/SELL/HOLD signal with confidence score, risk level, and plain-English
+reasoning — all in one chat interaction.
+
+**Example:**
+> *"What is the outlook for NVDA this week?"*
+> → **SIGNAL: BUY | Confidence: 82% | Risk: MEDIUM**
+> → Live 30-day price chart, sentiment breakdown, top 5 relevant headlines
+
+---
+
+### 🚨 2. Incident Analyst Agent
+**Problem:** Large engineering teams deal with hundreds of incident reports
+simultaneously. Reading all of them wastes critical response time during
+outages.
+
+**Solution:** Upload any incident report as a `.txt` file. The agent reads
+the raw text, extracts affected systems, identifies patterns, computes a
+**Severity Index (0–100)** based on keyword density, user frustration, and
+historical frequency — backed by a RAG knowledge base of real financial
+system incidents — and auto-drafts a P0/P1/P2 engineering brief with ranked
+root causes and next actions.
+
+**Example:**
+> *Upload: incident_report_nov2024.txt*
+> → **SEVERITY: 87/100 | PRIORITY: P0**
+> → Root Cause: SSO Gateway Timeout (91% confidence)
+> → Historical match: Dec 2024 Auth Outage
+> → Auto-drafted engineering summary with ordered action items
+
+---
+
+### 🚢 3. Procurement & Port Risk Agent
+**Problem:** Supply chain managers cannot monitor global port disruptions,
+trade news, and geopolitical events fast enough to act before they impact
+procurement.
+
+**Solution:** The agent monitors live news for port disruptions, trade policy
+changes, and logistics events. It maps events to affected supply routes and
+generates a **Index Score (0–100)** with recommended procurement actions.
+
+**Example:**
+> *"What is the current risk for procurement from Shanghai?"*
+> → **RISK SCORE: 74/100 | Action: Consider alternative sourcing**
+> → Top 3 disruption events, affected trade routes, recommended timeline
+
+---
+
+### 📊 4. Sector Intelligence & Automated Alert System
+**Problem:** Investors and analysts need a daily sector-wide performance
+briefing but cannot manually scan every stock and headline across multiple
+sectors every morning and evening.
+
+**Solution:** NexusFlow automatically runs a **twice-daily sector sweep** at
+market open (9 AM) and market close (5 PM). For each major sector it fetches
+the top headlines, classifies stocks as top-performing or low-performing, and
+generates a structured sector summary with BUY/WATCH/AVOID recommendations.
+These digests are pushed as **automated email alerts** to subscribed users.
+
+**Sectors covered:**
+Technology · Healthcare · Energy · Finance · Consumer · Industrials · Utilities
+
+**Each sector digest includes:**
+- Top 3 performing stocks with signal and reasoning
+- Bottom 3 underperforming stocks with risk flags
+- Sector-wide sentiment score
+- Key macro catalyst driving the sector
+- Recommended watchlist for the next session
+
+**Example Alert (9 AM digest):**
+```
+NexusFlow Morning Sector Digest — March 8, 2026
+
+📈 TECHNOLOGY — BULLISH (Score: 0.74)
+  Top Performers:    NVDA ↑ BUY | MSFT ↑ BUY | META ↑ HOLD
+  Underperformers:   AAPL ↓ SELL | INTC ↓ AVOID
+  Key Catalyst:      Fed signals rate pause, AI infrastructure spending up
+  Watchlist:         NVDA, MSFT
+
+🏥 HEALTHCARE — NEUTRAL (Score: 0.12)
+  Top Performers:    LLY ↑ BUY | JNJ ↑ HOLD
+  Underperformers:   PFE ↓ SELL
+  Key Catalyst:      FDA approval pipeline mixed signals
+  Watchlist:         LLY
+
+⚡ ENERGY — BEARISH (Score: -0.41)
+  Top Performers:    None
+  Underperformers:   XOM ↓ SELL | CVX ↓ AVOID
+  Key Catalyst:      Oil inventory build, demand concerns
+  Watchlist:         Monitor for reversal
+```
+
+---
+
+## System Architecture
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│                          React Frontend                              │
+│   Market Intel | Incident Analyst | Port Risk | Sector Dashboard     │
+└────────────────────────────────┬─────────────────────────────────────┘
+                                 │ REST API (HTTP/JSON)
+                                 ▼
+┌──────────────────────────────────────────────────────────────────────┐
+│                         FastAPI Backend                              │
+│  /market/chat  /incident/analyze  /port/risk  /sector/digest         │
+└──────┬──────────────┬──────────────────┬──────────────┬─────────────┘
+       │              │                  │              │
+       ▼              ▼                  ▼              ▼
+┌──────────┐  ┌──────────────┐  ┌─────────────┐  ┌────────────────┐
+│ Market   │  │  Incident    │  │  Port Risk  │  │ Sector Alert   │
+│ Pipeline │  │  Pipeline    │  │  Pipeline   │  │ Pipeline       │
+└────┬─────┘  └──────┬───────┘  └──────┬──────┘  └───────┬────────┘
+     │                │                 │                  │
+     ▼                ▼                 ▼                  ▼
+┌─────────┐   ┌──────────────┐   ┌──────────┐   ┌────────────────┐
+│ Intent  │   │ Text File    │   │ Intent   │   │ Sector Sweep   │
+│ Agent   │   │ Parser Tool  │   │ Agent    │   │ Agent          │
+└─────────┘   └──────────────┘   └──────────┘   └────────────────┘
+     │                │                 │                  │
+     ▼                ▼                 ▼                  ▼
+┌─────────┐   ┌──────────────┐   ┌──────────┐   ┌────────────────┐
+│News +   │   │ Extraction   │   │  News    │   │ Per-Sector     │
+│Price    │   │ Agent        │   │ Fetcher  │   │ News Fetcher   │
+│Fetcher  │   └──────────────┘   └──────────┘   └────────────────┘
+└─────────┘          │                 │                  │
+     │          ┌────┴──────┐          ▼                  ▼
+     ▼          │ RAG Tool  │   ┌──────────┐   ┌────────────────┐
+┌─────────┐     │ (Chroma)  │   │  Risk    │   │ Performance    │
+│Sentiment│     └────┬──────┘   │  Score   │   │ Classifier     │
+│ Agent   │          │          │  Agent   │   │ Agent          │
+└─────────┘          ▼          └──────────┘   └────────────────┘
+     │        ┌──────────────┐        │                  │
+     ▼        │ Root Cause   │        ▼                  ▼
+┌─────────┐   │ Agent        │  ┌──────────┐   ┌────────────────┐
+│ Signal  │   └──────────────┘  │  Action  │   │Recommendation  │
+│ Agent   │          │          │  Agent   │   │ Agent          │
+└─────────┘          ▼          └──────────┘   └────────────────┘
+                ┌──────────────┐                          │
+                │ Action       │                          ▼
+                │ Planner      │               ┌────────────────┐
+                └──────────────┘               │ Alert Composer │
+                      │                        │ Agent          │
+                      ▼                        └───────┬────────┘
+                ┌──────────────┐                       │
+                │ Summarizer   │                       ▼
+                │ Agent        │              ┌────────────────┐
+                └──────────────┘              │ Email Dispatch │
+                                              │ 9 AM + 5 PM    │
+                                              └────────────────┘
+                      │
+                      ▼
+          ┌───────────────────────┐
+          │  Gemini 1.5 Flash LLM │
+          │  (all agents)         │
+          └───────────────────────┘
+```
+
+---
+
+## Pipeline Flows
+
+### 📈 Market Intelligence
+```
+User Question (natural language)
+        │
+        ▼
+[Intent Agent] — ticker, sector, time window
+        │
+   ┌────┴────┐
+   ▼         ▼
+[News      [Price
+ Fetcher]   Fetcher]
+ NewsAPI    yfinance
+   └────┬────┘
+        ▼
+[Sentiment Agent]
+WHO/WHAT/WHY/HOW analysis per headline
+BULLISH / BEARISH / NEUTRAL
+        │
+        ▼
+[Signal Agent]
+BUY / SELL / HOLD
+Confidence + Risk level + Reasoning
+        │
+        ▼
+React UI — chat reply + price chart + signal card
+```
+
+### 🚨 Incident Analyst
+```
+.txt File Upload (incident report)
+        │
+        ▼
+[Text File Parser] — reads raw text
+        │
+        ▼
+[Extraction Agent]
+Affected systems, symptoms, timeline, severity
+        │
+   ┌────┴────────────────┐
+   ▼                     ▼
+[RAG Tool]         [Frustration Agent]
+Chroma vector        Per-ticket frustration
+search — top 3       score (0-10)
+similar incidents
+   └────┬────────────────┘
+        ▼
+[Root Cause Agent]
+Ranked causes + confidence %
+Grounded by RAG historical context
+        │
+        ▼
+[Action Planner Agent]
+Ordered next steps + suggested owner
+        │
+        ▼
+[Summarizer Agent]
+P0/P1/P2 engineering brief
+        │
+        ▼
+React UI — severity meter + root causes + summary
+```
+
+### 🚢 Port Risk
+```
+User Query (port / region / commodity)
+        │
+        ▼
+[Intent Agent] — port, region, trade route
+        │
+        ▼
+[News Fetcher] — live port/trade/geopolitical news
+        │
+        ▼
+[Risk Scoring Agent] — 0-100 disruption score
+        │
+        ▼
+[Action Agent] — switch supplier / delay / hedge
+        │
+        ▼
+React UI — risk score + affected routes + recommendations
+```
+
+### 📊 Sector Alert (Automated, Twice Daily)
+```
+Scheduler — 9 AM + 5 PM trigger
+        │
+        ▼
+[Sector Sweep Agent]
+Loops through 7 sectors
+        │ (per sector)
+        ▼
+[News Fetcher Tool]
+Top headlines per sector — NewsAPI
+        │
+        ▼
+[Performance Classifier Agent]
+TOP PERFORMING / LOW PERFORMING / NEUTRAL
+per stock based on headline analysis
+        │
+        ▼
+[Recommendation Agent]
+BUY / WATCH / AVOID per stock
+Sector sentiment score + key macro catalyst
+        │
+        ▼
+[Alert Composer Agent]
+Formats structured sector digest
+        │
+        ▼
+[Email Dispatch]
+Sent to all subscribed users
+9 AM (market open) + 5 PM (market close)
+```
+
+---
+
+## RAG Architecture
+
+```
+INGESTION — one-time setup
+────────────────────────────────────────────────────
+Sources:
+  -  Historical Incidents     (incidents.txt)
+  -  IOSCO Market Outage Reports (txt)
+  -  AI Incident Database     (CSV — Kaggle)
+  -  Past Port Disruption Events (txt)
+        │
+        ▼
+[TextLoader] — LangChain reads all .txt sources
+        │
+        ▼
+[RecursiveCharacterTextSplitter]
+  chunk_size = 800
+  chunk_overlap = 100
+  separator = "---"
+        │
+        ▼
+[Gemini text-embedding-004]
+  768-dimensional dense vectors
+        │
+        ▼
+[ChromaDB PersistentClient]
+  Collection: "financial_incidents"
+  Stored at: ./chroma_db
+
+
+RETRIEVAL — at query time
+────────────────────────────────────────────

@@ -6,7 +6,7 @@ from .api.incident_routes import router as incident_router
 from .api.supply_chain_routes import router as supply_chain_router
 
 app = FastAPI(
-    title="TriageIQ Unified Intelligence Platform",
+    title="NexusFlow Unified Intelligence Platform",
     description="Backend APIs for Market Intelligence and Incident Analyst agents.",
     version="1.0.0",
 )

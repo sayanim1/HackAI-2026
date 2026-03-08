@@ -18,7 +18,7 @@ export function Sidebar({ activeView, setActiveView }) {
           <div className="w-10 h-10 rounded-xl bg-agentbase-500 flex items-center justify-center text-white shadow-xl shadow-agentbase-500/20">
             <Brain className="w-6 h-6" />
           </div>
-          AgentBase
+          NexusFlow
         </h1>
       </div>
 

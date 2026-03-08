@@ -1,4 +1,4 @@
-# TriageIQ Backend
+# NexusFlow Backend
 
 A unified intelligence platform backend serving two LLM-based intelligent agents powered by LangGraph, FastAPI, and Gemini.
 

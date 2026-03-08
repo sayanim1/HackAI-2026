@@ -86,7 +86,7 @@ def _format_report_body(alerts: List[Dict[str, Any]]) -> str:
                 </tbody>
             </table>
             <p style="font-size: 12px; color: #666; margin-top: 20px;">
-                This is an automated report from the TriageIQ Unified Intelligence Platform.
+                This is an automated report from the NexusFlow Unified Intelligence Platform.
             </p>
         </body>
     </html>
