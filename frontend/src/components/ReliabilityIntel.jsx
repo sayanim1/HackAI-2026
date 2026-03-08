@@ -13,7 +13,7 @@ export function ReliabilityIntel() {
   useEffect(() => {
     // Generate a unique client ID for this session
     const clientId = `client_${Math.random().toString(36).substring(2, 9)}`;
-    const ws = new WebSocket(`ws://localhost:5001/api/incident/ws/${clientId}`);
+    const ws = new WebSocket(`ws://localhost:8000/api/incident/ws/${clientId}`);
     
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -51,7 +51,7 @@ export function ReliabilityIntel() {
     setStatusLogs([{ time: new Date().toLocaleTimeString(), msg: "Initiating Chaos Coordinator pipeline on text input..." }]);
 
     try {
-      const response = await fetch("http://localhost:5001/api/incident/analyze_text", {
+      const response = await fetch("http://localhost:8000/api/incident/analyze_text", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

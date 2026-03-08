@@ -16,7 +16,7 @@ export function MarketTerminal() {
   const fetchMarketData = async (query = '') => {
     setIsLoading(true);
     try {
-      const response = await fetch(`http://localhost:5001/api/market${query ? `?q=${query}` : ''}`);
+      const response = await fetch(`http://localhost:8000/api/market${query ? `?q=${query}` : ''}`);
       const result = await response.json();
       if (result.success) {
         setMarketData(result.data);
@@ -46,7 +46,7 @@ export function MarketTerminal() {
     setIsChatLoading(true);
 
     try {
-      const response = await fetch('http://localhost:5001/api/market/chat', {
+      const response = await fetch('http://localhost:8000/api/market/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ message: userMsg.text })

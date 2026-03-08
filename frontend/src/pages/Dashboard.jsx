@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Sidebar } from '../components/Sidebar';
 import { Overview } from '../components/Overview';
 import { MarketTerminal } from '../components/MarketTerminal';
+import { MarketAlerts } from '../components/MarketAlerts';
 import { ReliabilityIntel } from '../components/ReliabilityIntel';
 import { SupplyChainDashboard } from '../components/SupplyChainDashboard';
 
@@ -14,6 +15,7 @@ export function Dashboard() {
       
       {activeView === 'overview' && <Overview setActiveView={setActiveView} />}
       {activeView === 'market' && <MarketTerminal />}
+      {activeView === 'alerts' && <MarketAlerts />}
       {activeView === 'reliability' && <ReliabilityIntel />}
       {activeView === 'supply_chain' && <SupplyChainDashboard />}
     </div>

@@ -159,3 +159,21 @@ def get_sector_alerts():
     """
     from .alerts_manager import alerts_manager
     return alerts_manager.get_alerts()
+
+@router.post("/alerts/send-email")
+def trigger_email_report():
+    """
+    Manually triggers the latest sector alerts to be sent via email.
+    """
+    from .alerts_manager import alerts_manager
+    from .email_service import send_market_report
+    
+    alerts = alerts_manager.latest_alerts
+    if not alerts:
+        # If background task hasn't run yet, fetch them now
+        from app.agents.market.alerts import get_sector_recommendations
+        alerts = get_sector_recommendations()
+        alerts_manager.latest_alerts = alerts
+        
+    send_market_report(alerts)
+    return {"success": True, "message": "Email report triggered successfully."}

@@ -19,7 +19,7 @@ export function SupplyChainDashboard() {
 
   useEffect(() => {
     const clientId = `client_sc_${Math.random().toString(36).substring(2, 9)}`;
-    const ws = new WebSocket(`ws://localhost:5001/api/supply_chain/ws/${clientId}`);
+    const ws = new WebSocket(`ws://localhost:8000/api/supply_chain/ws/${clientId}`);
     
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -62,7 +62,7 @@ export function SupplyChainDashboard() {
     setStatusLogs([{ time: new Date().toLocaleTimeString(), msg: `Initiating Domino Predictor for ${targetCountry}...` }]);
     
     try {
-      await fetch("http://localhost:5001/api/supply_chain/analyze", {
+      await fetch("http://localhost:8000/api/supply_chain/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ hub: targetCountry, client_id: wsRef.current.clientId }),
