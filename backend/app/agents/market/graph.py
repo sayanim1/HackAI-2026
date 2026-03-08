@@ -32,8 +32,12 @@ class IntentOutput(BaseModel):
     tickers: List[str] = Field(description="List of up to 3 stock ticker symbols found or inferred from the user query.")
     sector: str = Field(description="The market sector if one is found or implied in the user query.")
 
+class HeadlineSentiment(BaseModel):
+    headline: str
+    sentiment: str
+
 class SentimentOutput(BaseModel):
-    headline_sentiments: List[Dict[str, str]] = Field(
+    headline_sentiments: List[HeadlineSentiment] = Field(
         description="A list of dictionaries containing 'headline' and 'sentiment' (BULLISH, BEARISH, NEUTRAL).")
 
 class SignalOutput(BaseModel):
