@@ -1,4 +1,4 @@
-import { TrendingUp, AlertTriangle, ArrowRight, Sparkles } from 'lucide-react';
+import { TrendingUp, AlertTriangle, ArrowRight, Sparkles, Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export function Overview({ setActiveView }) {
@@ -22,7 +22,7 @@ export function Overview({ setActiveView }) {
         </p>
 
         {/* Cards container */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           
           {/* Card 1: Market Analyst */}
           <div className="bg-white rounded-[2rem] p-10 card-shadow flex flex-col h-full border border-gray-100">
@@ -48,7 +48,7 @@ export function Overview({ setActiveView }) {
 
             <button 
               onClick={() => setActiveView('market')}
-              className="w-full bg-[#111111] hover:bg-black text-white font-semibold py-4 px-6 rounded-xl transition-colors flex items-center justify-center gap-2"
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-4 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20"
             >
               Enter Market Terminal
               <ArrowRight className="w-4 h-4" />
@@ -79,9 +79,40 @@ export function Overview({ setActiveView }) {
 
             <button 
               onClick={() => setActiveView('reliability')}
-              className="w-full bg-agentbase-500 hover:bg-agentbase-600 text-white font-semibold py-4 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg shadow-agentbase-500/20"
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-4 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg shadow-orange-500/20"
             >
               Analyze Incidents
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Card 3: Supply Chain */}
+          <div className="bg-white rounded-[2rem] p-10 card-shadow flex flex-col h-full border border-gray-100">
+            <div className="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-8">
+              <Globe className="w-7 h-7" />
+            </div>
+            
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">Supply Chain Domino</h2>
+            <p className="text-slate-600 mb-8 leading-relaxed">
+              Predict cascading global delays natively on an interactive world map utilizing real-time GDELT news ingestion.
+            </p>
+
+            <ul className="space-y-4 mb-10 flex-1">
+              <li className="flex items-start gap-3 text-slate-600 text-sm">
+                <div className="mt-1 text-blue-600"><Sparkles className="w-4 h-4" /></div>
+                Geographic topology highlights
+              </li>
+              <li className="flex items-start gap-3 text-slate-600 text-sm">
+                <div className="mt-1 text-blue-600"><Sparkles className="w-4 h-4" /></div>
+                Disruption threshold simulation
+              </li>
+            </ul>
+
+            <button 
+              onClick={() => setActiveView('supply_chain')}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition-colors flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30"
+            >
+              Predict Delays
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>

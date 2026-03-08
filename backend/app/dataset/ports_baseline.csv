@@ -1,0 +1,55 @@
+Port_Name,Country,Importance_Score
+Shanghai,China,1.0
+Singapore,Singapore,1.0
+Ningbo-Zhoushan,China,1.0
+Shenzhen,China,1.0
+Qingdao,China,1.0
+Guangzhou Harbor,China,1.0
+Busan,South Korea,1.0
+Tianjin,China,1.0
+Jebel Ali, Dubai,United Arab Emirates,1.0
+Port Klang,Malaysia,1.0
+Rotterdam,The Netherlands,0.7
+Hong Kong,China,0.7
+Antwerp,Belgium,0.7
+Xiamen,China,0.7
+Tanjung Pelepas,Malaysia,0.7
+Los Angeles,USA,0.7
+Tanger Med,Morocco,0.7
+Suzhou,China,0.7
+Long Beach,USA,0.7
+Laem Chabang,Thailand,0.7
+Kaohsiung,China,0.7
+Ho Chi Minh City,Vietnam,0.7
+Guangxi Beibu,China,0.7
+New York-New Jersey,USA,0.7
+Mundra,India,0.7
+Hamburg,Germany,0.7
+Tanjung Priok,Indonesia,0.7
+Colombo,Sri Lanka,0.7
+Hai Phong,Vietnam,0.7
+Cai Mep,Vietnam,0.7
+Jawarharlal Nehru Port (Nhava Sheva),India,0.5
+Rizhao,China,0.5
+Lianyungang,China,0.5
+Yingkou,China,0.5
+Savannah,USA,0.5
+Manila,Philippines,0.5
+Santos,Brazil,0.5
+Valencia,Spain,0.5
+Abu Dhabi,United Arab Emirates,0.5
+Dalian,China,0.5
+Colon,Panama,0.5
+Yantai,China,0.5
+Algeciras,Spain,0.5
+Piraeus,Greece,0.5
+Tokyo,Japan,0.5
+Bremen/Bremerhaven,Germany,0.5
+Tanjung Perak,Indonesia,0.5
+Houston,USA,0.5
+Dongguan,China,0.5
+Balboa,Panama,0.5
+
+
+
+

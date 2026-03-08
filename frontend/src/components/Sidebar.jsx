@@ -1,4 +1,4 @@
-import { LayoutDashboard, TrendingUp, AlertTriangle, Settings, Brain } from 'lucide-react';
+import { LayoutDashboard, TrendingUp, AlertTriangle, Settings, Brain, Globe } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { motion } from 'framer-motion';
 
@@ -7,6 +7,7 @@ export function Sidebar({ activeView, setActiveView }) {
     { id: 'overview', icon: LayoutDashboard, label: 'Overview' },
     { id: 'market', icon: TrendingUp, label: 'Market Analyst', color: 'text-market-600' },
     { id: 'reliability', icon: AlertTriangle, label: 'Reliability Intel', color: 'text-risk-600' },
+    { id: 'supply_chain', icon: Globe, label: 'Supply Chain Domino', color: 'text-blue-600' },
   ];
 
   return (

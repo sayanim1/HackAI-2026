@@ -1,0 +1,657 @@
+{
+    "top_20_global_ports_mapping": {
+        "Shanghai": {
+            "primary_industries": [
+                "Electronics",
+                "Automotive",
+                "Heavy Machinery"
+            ],
+            "material_dependencies": [
+                "Semiconductors",
+                "Rare Earth Elements",
+                "Refined Steel"
+            ],
+            "alternative_hub": "Port of Busan, South Korea"
+        },
+        "Singapore": {
+            "primary_industries": [
+                "Oil Refining",
+                "Shipbuilding",
+                "Transshipment"
+            ],
+            "material_dependencies": [
+                "Crude Oil",
+                "Liquefied Natural Gas (LNG)",
+                "Chemical Feedstocks"
+            ],
+            "alternative_hub": "Port of Tanjung Pelepas, Malaysia"
+        },
+        "Ningbo-Zhoushan": {
+            "primary_industries": [
+                "Petrochemicals",
+                "Iron & Steel",
+                "Raw Commodities"
+            ],
+            "material_dependencies": [
+                "Iron Ore",
+                "Crude Oil",
+                "Copper"
+            ],
+            "alternative_hub": "Port of Shanghai, China"
+        },
+        "Shenzhen": {
+            "primary_industries": [
+                "Consumer Electronics",
+                "Telecommunications",
+                "Tech Manufacturing"
+            ],
+            "material_dependencies": [
+                "Lithium-ion Batteries",
+                "Integrated Circuits",
+                "Aluminum"
+            ],
+            "alternative_hub": "Port of Hong Kong"
+        },
+        "Qingdao": {
+            "primary_industries": [
+                "Appliances",
+                "Rubber & Tires",
+                "Agriculture"
+            ],
+            "material_dependencies": [
+                "Natural Rubber",
+                "Iron Ore",
+                "Grains"
+            ],
+            "alternative_hub": "Port of Tianjin, China"
+        },
+        "Guangzhou Harbor": {
+            "primary_industries": [
+                "Automotive Manufacturing",
+                "Bio-pharmaceuticals",
+                "Apparel"
+            ],
+            "material_dependencies": [
+                "Auto Parts",
+                "Specialty Chemicals",
+                "Textile Raw Materials"
+            ],
+            "alternative_hub": "Port of Shenzhen, China"
+        },
+        "Busan": {
+            "primary_industries": [
+                "Marine Engineering",
+                "Automotive",
+                "Electronics"
+            ],
+            "material_dependencies": [
+                "High-grade Steel",
+                "LCD/OLED Panels",
+                "Vehicle Components"
+            ],
+            "alternative_hub": "Port of Gwangyang, South Korea"
+        },
+        "Tianjin": {
+            "primary_industries": [
+                "Aviation",
+                "Petrochemicals",
+                "Energy"
+            ],
+            "material_dependencies": [
+                "Titanium Alloys",
+                "Aerospace Parts",
+                "Coking Coal"
+            ],
+            "alternative_hub": "Port of Qingdao, China"
+        },
+        "Jebel Ali": {
+            "primary_industries": [
+                "Energy Services",
+                "Aluminum Smelting",
+                "Luxury Retail"
+            ],
+            "material_dependencies": [
+                "Aluminum Ingots",
+                "Oil & Gas Equipment",
+                "Consumer Goods"
+            ],
+            "alternative_hub": "Port of Salalah, Oman"
+        },
+        "Port Klang": {
+            "primary_industries": [
+                "Palm Oil",
+                "Rubber Processing",
+                "Electronics Assembly"
+            ],
+            "material_dependencies": [
+                "Crude Palm Oil",
+                "Industrial Rubber",
+                "Electronics Parts"
+            ],
+            "alternative_hub": "Port of Singapore"
+        },
+        "Rotterdam": {
+            "primary_industries": [
+                "Petrochemicals",
+                "Green Hydrogen",
+                "Food Processing"
+            ],
+            "material_dependencies": [
+                "Crude Oil",
+                "Iron Ore",
+                "Agricultural Bulk"
+            ],
+            "alternative_hub": "Port of Antwerp-Bruges, Belgium"
+        },
+        "Hong Kong": {
+            "primary_industries": [
+                "Financial Logistics",
+                "Re-exports",
+                "High-value Goods"
+            ],
+            "material_dependencies": [
+                "Gold & Precious Metals",
+                "High-end Electronics",
+                "Pharmaceuticals"
+            ],
+            "alternative_hub": "Port of Nansha (Guangzhou), China"
+        },
+        "Antwerp": {
+            "primary_industries": [
+                "Chemicals",
+                "Automotive Logistics",
+                "Fruit/Perishables"
+            ],
+            "material_dependencies": [
+                "Polymers",
+                "Finished Vehicles",
+                "Refrigerated Produce"
+            ],
+            "alternative_hub": "Port of Rotterdam, Netherlands"
+        },
+        "Xiamen": {
+            "primary_industries": [
+                "Optoelectronics",
+                "Stone/Construction",
+                "Electronics"
+            ],
+            "material_dependencies": [
+                "Granite/Marble",
+                "LED Components",
+                "Glass"
+            ],
+            "alternative_hub": "Port of Fuzhou, China"
+        },
+        "Tanjung Pelepas": {
+            "primary_industries": [
+                "Transshipment",
+                "Manufacturing",
+                "Logistics"
+            ],
+            "material_dependencies": [
+                "Intermediate Industrial Components",
+                "Fuel Oil",
+                "FMCG"
+            ],
+            "alternative_hub": "Port of Singapore"
+        },
+        "Los Angeles": {
+            "primary_industries": [
+                "Retail Distribution",
+                "Entertainment Tech",
+                "Apparel"
+            ],
+            "material_dependencies": [
+                "Finished Consumer Electronics",
+                "Clothing",
+                "Furniture"
+            ],
+            "alternative_hub": "Port of Long Beach, USA"
+        },
+        "Tanger Med": {
+            "primary_industries": [
+                "Automotive Export",
+                "Aeronautics",
+                "Textiles"
+            ],
+            "material_dependencies": [
+                "Vehicle Parts",
+                "Aviation Components",
+                "Raw Fabric"
+            ],
+            "alternative_hub": "Port of Algeciras, Spain"
+        },
+        "Suzhou": {
+            "primary_industries": [
+                "High-Tech Manufacturing",
+                "Precision Instruments",
+                "Medical Devices"
+            ],
+            "material_dependencies": [
+                "Electronic Components",
+                "Medical-grade Plastics",
+                "Silicon Wafers"
+            ],
+            "alternative_hub": "Port of Shanghai, China"
+        },
+        "Long Beach": {
+            "primary_industries": [
+                "Energy Import",
+                "Electronics",
+                "Retail Logistics"
+            ],
+            "material_dependencies": [
+                "Refined Petroleum",
+                "Plastic Products",
+                "Household Goods"
+            ],
+            "alternative_hub": "Port of Los Angeles, USA"
+        },
+        "Laem Chabang": {
+            "primary_industries": [
+                "Automotive Export",
+                "Food Processing",
+                "Electronics"
+            ],
+            "material_dependencies": [
+                "Auto Parts",
+                "Processed Seafood",
+                "Agricultural Products"
+            ],
+            "alternative_hub": "Port of Ho Chi Minh City, Vietnam"
+        },
+        "Kaohsiung": {
+            "primary_industries": [
+                "Semiconductors",
+                "Steel Production",
+                "Petrochemicals"
+            ],
+            "material_dependencies": [
+                "Silicon Wafers",
+                "Scrap Metal",
+                "Ethylene"
+            ],
+            "alternative_hub": "Port of Keelung, Taiwan"
+        },
+        "Ho Chi Minh City": {
+            "primary_industries": [
+                "Apparel",
+                "Footwear",
+                "Consumer Electronics"
+            ],
+            "material_dependencies": [
+                "Textiles",
+                "Footwear Components",
+                "Semiconductors"
+            ],
+            "alternative_hub": "Port of Cai Mep, Vietnam"
+        },
+        "Guangxi Beibu": {
+            "primary_industries": [
+                "Metals",
+                "Minerals",
+                "Chemicals"
+            ],
+            "material_dependencies": [
+                "Non-ferrous Metals",
+                "Crude Oil",
+                "Phosphates"
+            ],
+            "alternative_hub": "Port of Guangzhou, China"
+        },
+        "New York-New Jersey": {
+            "primary_industries": [
+                "Pharmaceuticals",
+                "E-commerce",
+                "Food Distribution"
+            ],
+            "material_dependencies": [
+                "Medical Supplies",
+                "Luxury Automobiles",
+                "Beverages"
+            ],
+            "alternative_hub": "Port of Savannah, USA"
+        },
+        "Mundra": {
+            "primary_industries": [
+                "Chemicals",
+                "Fertilizers",
+                "Coal",
+                "Automotive"
+            ],
+            "material_dependencies": [
+                "Raw Fertilizer",
+                "Coking Coal",
+                "Vehicle Parts"
+            ],
+            "alternative_hub": "Port of Nhava Sheva, India"
+        },
+        "Hamburg": {
+            "primary_industries": [
+                "Automotive",
+                "Aerospace",
+                "Chemicals"
+            ],
+            "material_dependencies": [
+                "Precision Engineering Components",
+                "Industrial Chemicals",
+                "Auto Parts"
+            ],
+            "alternative_hub": "Port of Bremerhaven, Germany"
+        },
+        "Tanjung Priok": {
+            "primary_industries": [
+                "Consumer Electronics",
+                "Textiles",
+                "Automotive Parts"
+            ],
+            "material_dependencies": [
+                "Raw Fabric",
+                "Electronic Components",
+                "Rubber"
+            ],
+            "alternative_hub": "Port of Tanjung Perak, Indonesia"
+        },
+        "Colombo": {
+            "primary_industries": [
+                "Transshipment",
+                "Tea",
+                "Textiles"
+            ],
+            "material_dependencies": [
+                "Processed Tea",
+                "Garment Accessories",
+                "Intermediate Goods"
+            ],
+            "alternative_hub": "Port of Mundra, India"
+        },
+        "Hai Phong": {
+            "primary_industries": [
+                "High-tech Manufacturing",
+                "Electronics",
+                "Automotive"
+            ],
+            "material_dependencies": [
+                "Microchips",
+                "Steel Coils",
+                "Display Panels"
+            ],
+            "alternative_hub": "Port of Hong Kong"
+        },
+        "Cai Mep": {
+            "primary_industries": [
+                "Oil & Gas",
+                "Renewable Energy",
+                "Transshipment"
+            ],
+            "material_dependencies": [
+                "LNG",
+                "Steel Infrastructure",
+                "Fuel Bunkers"
+            ],
+            "alternative_hub": "Port of Ho Chi Minh City, Vietnam"
+        },
+        "Jawarharlal Nehru Port (Nhava Sheva)": {
+            "primary_industries": [
+                "Textiles",
+                "Machinery",
+                "Chemicals"
+            ],
+            "material_dependencies": [
+                "Synthetic Yarn",
+                "Industrial Machinery",
+                "Pharmaceutical Feedstock"
+            ],
+            "alternative_hub": "Port of Mundra, India"
+        },
+        "Rizhao": {
+            "primary_industries": [
+                "Steel",
+                "Coal",
+                "Iron Ore"
+            ],
+            "material_dependencies": [
+                "Iron Ore",
+                "Coal",
+                "Finished Steel"
+            ],
+            "alternative_hub": "Port of Qingdao, China"
+        },
+        "Lianyungang": {
+            "primary_industries": [
+                "Chemicals",
+                "Agriculture",
+                "Pharmaceuticals"
+            ],
+            "material_dependencies": [
+                "Fertilizers",
+                "Medicinal Ingredients",
+                "Grain"
+            ],
+            "alternative_hub": "Port of Qingdao, China"
+        },
+        "Yingkou": {
+            "primary_industries": [
+                "Magnesite",
+                "Steel",
+                "Food Products"
+            ],
+            "material_dependencies": [
+                "Magnesium Ore",
+                "Steel Billets",
+                "Agricultural Commodities"
+            ],
+            "alternative_hub": "Port of Dalian, China"
+        },
+        "Savannah": {
+            "primary_industries": [
+                "Retail Distribution",
+                "Agriculture",
+                "Forestry"
+            ],
+            "material_dependencies": [
+                "Consumer Products",
+                "Frozen Food",
+                "Lumber/Paper"
+            ],
+            "alternative_hub": "Port of Charleston, USA"
+        },
+        "Manila": {
+            "primary_industries": [
+                "Electronics",
+                "Apparel",
+                "Food Processing"
+            ],
+            "material_dependencies": [
+                "Electronic Parts",
+                "Textile Materials",
+                "Sugar/Coconuts"
+            ],
+            "alternative_hub": "Port of Batangas, Philippines"
+        },
+        "Santos": {
+            "primary_industries": [
+                "Agriculture",
+                "Iron & Steel",
+                "Coffee"
+            ],
+            "material_dependencies": [
+                "Soybeans",
+                "Sugar",
+                "Coffee Beans",
+                "Iron Ore"
+            ],
+            "alternative_hub": "Port of Paranagua, Brazil"
+        },
+        "Valencia": {
+            "primary_industries": [
+                "Automotive",
+                "Textiles",
+                "Footwear",
+                "Foodstuffs"
+            ],
+            "material_dependencies": [
+                "Auto Components",
+                "Leather",
+                "Wine/Beverages"
+            ],
+            "alternative_hub": "Port of Algeciras, Spain"
+        },
+        "Abu Dhabi": {
+            "primary_industries": [
+                "Oil & Gas",
+                "Chemicals",
+                "Logistics"
+            ],
+            "material_dependencies": [
+                "Polyethylene",
+                "Petroleum Products",
+                "Construction Materials"
+            ],
+            "alternative_hub": "Port of Jebel Ali, UAE"
+        },
+        "Dalian": {
+            "primary_industries": [
+                "Heavy Industry",
+                "Chemicals",
+                "Oil Refining"
+            ],
+            "material_dependencies": [
+                "Crude Oil",
+                "Steel Plates",
+                "Industrial Gas"
+            ],
+            "alternative_hub": "Port of Tianjin, China"
+        },
+        "Colon": {
+            "primary_industries": [
+                "Transshipment",
+                "Consumer Goods",
+                "Logistics"
+            ],
+            "material_dependencies": [
+                "Global FMCG",
+                "Fuel Oil",
+                "Intermediate Components"
+            ],
+            "alternative_hub": "Port of Balboa, Panama"
+        },
+        "Yantai": {
+            "primary_industries": [
+                "Auto Manufacturing",
+                "Electronics",
+                "Wine"
+            ],
+            "material_dependencies": [
+                "Vehicle Components",
+                "Semiconductors",
+                "Glass"
+            ],
+            "alternative_hub": "Port of Qingdao, China"
+        },
+        "Algeciras": {
+            "primary_industries": [
+                "Transshipment",
+                "Petrochemicals",
+                "Refrigerated Logistics"
+            ],
+            "material_dependencies": [
+                "Bunker Fuel",
+                "Frozen Seafood",
+                "Fruit Exports"
+            ],
+            "alternative_hub": "Port of Tanger Med, Morocco"
+        },
+        "Piraeus": {
+            "primary_industries": [
+                "Logistics",
+                "Transshipment",
+                "Ship Repair"
+            ],
+            "material_dependencies": [
+                "Asian Consumer Exports",
+                "Steel Parts",
+                "Maritime Supplies"
+            ],
+            "alternative_hub": "Port of Marsaxlokk, Malta"
+        },
+        "Tokyo": {
+            "primary_industries": [
+                "Electronics",
+                "Automotive Parts",
+                "Precision Instruments"
+            ],
+            "material_dependencies": [
+                "High-tech Ceramics",
+                "Sensors",
+                "Vehicle Electronics"
+            ],
+            "alternative_hub": "Port of Yokohama, Japan"
+        },
+        "Bremen/Bremerhaven": {
+            "primary_industries": [
+                "Automotive",
+                "Wind Energy",
+                "Food Processing"
+            ],
+            "material_dependencies": [
+                "Vehicle Exports",
+                "Wind Turbine Components",
+                "Frozen Meat"
+            ],
+            "alternative_hub": "Port of Hamburg, Germany"
+        },
+        "Tanjung Perak": {
+            "primary_industries": [
+                "Agriculture",
+                "Textiles",
+                "Furniture"
+            ],
+            "material_dependencies": [
+                "Timber",
+                "Rubber",
+                "Rice/Grains"
+            ],
+            "alternative_hub": "Port of Tanjung Priok, Indonesia"
+        },
+        "Houston": {
+            "primary_industries": [
+                "Oil & Gas",
+                "Petrochemicals",
+                "Aerospace"
+            ],
+            "material_dependencies": [
+                "Crude Oil",
+                "Plastics",
+                "Drilling Equipment"
+            ],
+            "alternative_hub": "Port of Corpus Christi, USA"
+        },
+        "Dongguan": {
+            "primary_industries": [
+                "Furniture",
+                "Electronics",
+                "Toys"
+            ],
+            "material_dependencies": [
+                "Wood",
+                "Plastic Resin",
+                "Electronic Parts"
+            ],
+            "alternative_hub": "Port of Shenzhen, China"
+        },
+        "Balboa": {
+            "primary_industries": [
+                "Transshipment",
+                "Logistics",
+                "Bunker Fuel"
+            ],
+            "material_dependencies": [
+                "Containerized Freight",
+                "Diesel Fuel",
+                "Bananas"
+            ],
+            "alternative_hub": "Port of Colon, Panama"
+        }
+    }
+}

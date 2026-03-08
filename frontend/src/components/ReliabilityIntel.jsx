@@ -3,7 +3,7 @@ import { AlertTriangle, Activity, Terminal, Upload, FileText, Cpu } from 'lucide
 import { motion } from 'framer-motion';
 
 export function ReliabilityIntel() {
-  const [file, setFile] = useState(null);
+  const [incidentText, setIncidentText] = useState('');
   const [statusLogs, setStatusLogs] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [incidentData, setIncidentData] = useState(null);
@@ -37,34 +37,30 @@ export function ReliabilityIntel() {
     logsEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [statusLogs]);
 
-  const handleFileChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
-      setIncidentData(null);
-      setStatusLogs([]);
-    }
-  };
-
   const handleAnalyze = async () => {
-    if (!file || !wsRef.current) return;
+    if (!incidentText.trim()) return;
     
     setIsProcessing(true);
-    setStatusLogs([{ time: new Date().toLocaleTimeString(), msg: "Initiating Chaos Coordinator pipeline..." }]);
-    
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("client_id", wsRef.current.clientId);
+    setIncidentData(null);
+    setStatusLogs([{ time: new Date().toLocaleTimeString(), msg: "Initiating Chaos Coordinator pipeline on text input..." }]);
 
     try {
-      await fetch("http://localhost:5001/api/incident/analyze", {
+      const response = await fetch("http://localhost:5001/api/incident/analyze_text", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ text: incidentText }),
       });
-      // The rest of the updates will come through the WebSocket
+      
+      const data = await response.json();
+      setIncidentData(data);
+      setStatusLogs(prev => [...prev, { time: new Date().toLocaleTimeString(), msg: "Incident analysis complete." }]);
     } catch (error) {
       console.error("Analysis failed:", error);
-      setIsProcessing(false);
       setStatusLogs(prev => [...prev, { time: new Date().toLocaleTimeString(), msg: "Error establishing connection to backend." }]);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -103,29 +99,26 @@ export function ReliabilityIntel() {
         {/* Left Column (Live Feed & Upload) */}
         <div className="w-1/3 flex flex-col gap-6">
           
-          {/* File Upload Section */}
+          {/* Text Input Section */}
           <div className="bg-white border border-gray-100 rounded-2xl p-6 card-shadow flex flex-col">
             <div className="font-bold text-slate-900 text-lg flex items-center gap-2 mb-4">
-              <Upload className="w-5 h-5 text-indigo-600" />
-              Upload Incident Report
+              <FileText className="w-5 h-5 text-indigo-600" />
+              Input Incident Text
             </div>
             
-            <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer relative">
-               <input 
-                 type="file" 
-                 accept=".pdf" 
-                 onChange={handleFileChange} 
-                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+            <div className="flex-1 relative">
+               <textarea 
+                 value={incidentText}
+                 onChange={(e) => setIncidentText(e.target.value)}
+                 placeholder="Paste the incident report, Slack logs, or raw telemetry here..."
+                 className="w-full h-32 p-4 rounded-xl border-2 border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all resize-none text-sm text-slate-700"
                />
-               <FileText className="w-8 h-8 text-slate-400 mb-2" />
-               <p className="text-sm font-semibold text-slate-700">{file ? file.name : "Select a PDF report"}</p>
-               <p className="text-xs text-slate-500 mt-1">Drag and drop or click to browse</p>
             </div>
             
             <button 
               onClick={handleAnalyze} 
-              disabled={!file || isProcessing}
-              className={`mt-4 w-full py-3 rounded-xl font-bold transition-all shadow-md flex justify-center items-center gap-2 ${!file || isProcessing ? 'bg-slate-200 text-slate-400 border-none' : 'bg-orange-500 hover:bg-orange-600 text-white shadow-orange-500/20'}`}
+              disabled={!incidentText.trim() || isProcessing}
+              className={`mt-4 w-full py-3 rounded-xl font-bold transition-all shadow-md flex justify-center items-center gap-2 ${!incidentText.trim() || isProcessing ? 'bg-slate-200 text-slate-400 border-none' : 'bg-orange-500 hover:bg-orange-600 text-white shadow-orange-500/20'}`}
             >
               {isProcessing ? <Activity className="w-5 h-5 animate-spin" /> : <Cpu className="w-5 h-5" />}
               {isProcessing ? "Processing..." : "Analyze Incident"}
