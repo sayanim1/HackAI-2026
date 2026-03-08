@@ -4,6 +4,9 @@ import os # type: ignore # pyre-ignore
 import pandas as pd # type: ignore # pyre-ignore
 from typing import Dict, List, Any # type: ignore # pyre-ignore
 from datetime import datetime, timedelta # type: ignore # pyre-ignore
+from google import genai # type: ignore # pyre-ignore
+from google.genai import types # type: ignore # pyre-ignore
+import json
 
 def get_stock_data(ticker: str, period: str = "1mo") -> Dict[str, Any]:
     """
@@ -123,3 +126,50 @@ def get_market_news(query: str, limit: int = 10, filter_keywords: List[str] = No
     except Exception as e:
         print(f"Error fetching news: {e}")
         return []
+
+def classify_news_impact(headlines: List[str]) -> List[Dict[str, str]]:
+    """
+    Classifies a list of news headlines as HIGH-IMPACT, LOW-IMPACT, or NEUTRAL.
+    """
+    try:
+        from api_secrets import GEMINI_API_KEY
+        api_key = GEMINI_API_KEY
+    except ImportError:
+        api_key = os.getenv("GEMINI_API_KEY")
+
+    if not api_key or api_key == "your_gemini_api_key_here":
+        return [{"headline": h, "impact": "NEUTRAL"} for h in headlines]
+
+    client = genai.Client(api_key=api_key)
+    
+    prompt = f"""
+    You are a seasoned Wall Street financial analyst. 
+    Classify the following news headlines based on their potential impact on the stock market.
+    
+    Categories:
+    - HIGH-IMPACT: Major earnings, M&A, Fed decisions, CEO changes, guidance revisions.
+    - LOW-IMPACT: Analyst reiterations, minor partnerships, routine filings.
+    - NEUTRAL: General commentary, unrelated macro news, opinion pieces.
+    
+    Headlines:
+    {headlines}
+    
+    Return the result as a JSON object with a list 'classifications' containing objects with 'headline' and 'impact'.
+    """
+
+    class ClassificationResult(Any): # Dummy for schema reference if needed, but we'll use raw schema
+        pass
+
+    try:
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt,
+            config=types.GenerateContentConfig(
+                response_mime_type="application/json",
+            ),
+        )
+        data = json.loads(response.text)
+        return data.get("classifications", [])
+    except Exception as e:
+        print(f"Error classifying news: {e}")
+        return [{"headline": h, "impact": "NEUTRAL"} for h in headlines]

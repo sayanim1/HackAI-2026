@@ -127,3 +127,27 @@ async def chat_with_market_agent(request: ChatRequest):
         "data": market_data,
         "structured_data": agent_output
     }
+
+@router.get("/news-classification")
+def get_news_classification(q: str = "market"):
+    """
+    Fetches top 10 headlines for 'market' and classifies their impact.
+    """
+    from app.agents.market.tools import get_market_news, classify_news_impact
+    
+    search_query = "market"
+    print(f"Fetching and classifying news for: {search_query}")
+    news = get_market_news(query=search_query, limit=10)
+    
+    if not news:
+        return {"success": False, "message": "No news found for the given query."}
+        
+    headlines = [n["title"] for n in news]
+    classifications = classify_news_impact(headlines)
+    
+    return {
+        "success": True,
+        "query": search_query,
+        "news": classifications,
+        "count": len(classifications)
+    }
