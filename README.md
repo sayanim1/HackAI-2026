@@ -231,12 +231,11 @@ User Question (natural language)
  NewsAPI    yfinance
    └────┬────┘
         ▼
-[Sentiment Agent]
+[Stock Risk Analysis Agent]
 WHO/WHAT/WHY/HOW analysis per headline
-BULLISH / BEARISH / NEUTRAL
         │
         ▼
-[Signal Agent]
+[Recommendation]
 BUY / SELL / HOLD
 Confidence + Risk level + Reasoning
         │
