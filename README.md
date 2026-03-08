@@ -410,3 +410,10 @@ Context passed to Gemini analyzer node
 | 4 | **Sector Intelligence** | Autonomous every 12 hours | `BUY / WATCH / SELL` per sector | Runs on timer — no human required |
 
 > All agents powered by **Gemini 2.5 Flash** · Agents 1–3 orchestrated by **LangGraph** · Agent 4 runs on autonomous background scheduler
+>
+> <img width="1914" height="826" alt="image" src="https://github.com/user-attachments/assets/60f2e51f-f8fd-464a-92e7-5b282507fda9" />
+<img width="1629" height="841" alt="image (1)" src="https://github.com/user-attachments/assets/30f16733-5ffb-407c-ac3d-62cb1b3e116b" />
+<img width="1910" height="804" alt="image (2)" src="https://github.com/user-attachments/assets/96377ed5-a8a6-4a9d-9ec5-7474d0dc6aee" />
+<img width="1919" height="830" alt="image (3)" src="https://github.com/user-attachments/assets/30f8aa26-d276-4f0c-a8df-5ec3169fcca4" />
+<img width="1440" height="814" alt="Screenshot 2026-03-08 at 07 12 06" src="https://github.com/user-attachments/assets/b13eb439-4fcf-4886-ad13-8a20b675a339" />
+
