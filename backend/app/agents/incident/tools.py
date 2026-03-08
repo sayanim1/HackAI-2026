@@ -1,12 +1,5 @@
 import os
 import logging
-
-# ── Must patch BEFORE importing chromadb ─────────────────────
-from pydantic import ConfigDict
-import chromadb.config
-chromadb.config.Settings.model_config = ConfigDict(extra="ignore")
-
-# ── Now safe to import chromadb ───────────────────────────────
 import chromadb
 import fitz  # PyMuPDF
 from google import genai
