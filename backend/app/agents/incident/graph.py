@@ -120,7 +120,7 @@ def analyzer_node(state: IncidentState) -> Dict:
         
         summary_str = str(final_response["engineering_summary"])
         if is_new and not summary_str.startswith("🚨"):
-             final_response["engineering_summary"] = "🚨 This appears to be a new incident type. The following are estimated predictions.\n\n" + summary_str
+             final_response["engineering_summary"] = "🚨 The following are estimated predictions.\n\n" + summary_str
              
         return {"final_response": final_response}
     except Exception as e:

@@ -7,5 +7,9 @@ class SupplyChainState(TypedDict):
     analysis_reasoning: str
     alternative_hub: str
     recommended_action: str
+    baseline_alert: bool
+    baseline_score: float
+    baseline_reasoning: str
+    baseline_comparison: str
     emit_message: Callable[[str], Any]
     error: str

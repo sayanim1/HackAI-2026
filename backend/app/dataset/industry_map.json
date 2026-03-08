@@ -652,6 +652,19 @@
                 "Bananas"
             ],
             "alternative_hub": "Port of Colon, Panama"
+        },
+        "Iran": {
+            "primary_industries": [
+                "Oil & Gas",
+                "Petrochemicals",
+                "Logistics"
+            ],
+            "material_dependencies": [
+                "Containerized Freight",
+                "Diesel Fuel",
+                "Bananas"
+            ],
+            "alternative_hub": "Dubai, UAE"
         }
     }
 }

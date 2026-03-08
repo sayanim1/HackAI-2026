@@ -71,21 +71,56 @@ def fetch_supply_chain_news(port: str) -> list[dict[str, str]]:
         print(f"NewsAPI fetch error: {e}")
         return []
 
-def run_keyword_baseline(articles: list[dict[str, str]]) -> tuple[bool, str]:
+def run_keyword_baseline(articles: list[dict[str, str]]) -> tuple[bool, str, float]:
     """
-    A dumb keyword-based baseline. Triggers an alert if it sees any disruption keyword,
-    regardless of context (e.g. 'Strike averted' still triggers).
+    A heuristic keyword-based baseline. Triggers an alert if it sees disruption keywords,
+    but attempts to adjust the score up or down based on basic contextual/sentiment keywords.
     """
     disruption_keywords = ["strike", "typhoon", "hurricane", "congestion", "delay", "crash", "disruption", "protest", "storm"]
+    escalating_keywords = ["imminent", "starts", "worsens", "halts", "blocks", "shuts", "severe", "critical", "warning"]
+    mitigating_keywords = ["averted", "resolved", "ended", "over", "missed", "cleared", "avoided", "reopens", "resumes"]
     
+    score = 0.0
+    matched_reasons = []
+
     for article in articles:
         title = article.get("title", "").lower()
-        for kw in disruption_keywords:
-            if kw in title:
-                return True, f"Keyword '{kw}' detected in title: '{title}'"
+        active_disruptions = [kw for kw in disruption_keywords if kw in title]
+        
+        if active_disruptions:
+            for kw in active_disruptions:
+                # Base point for disruption
+                event_score = 0.2
+                context_notes = []
                 
-    return False, "No disruption keywords detected in recent headlines."
+                # Check context modifiers nearby in the title
+                if any(esc in title for esc in escalating_keywords):
+                    event_score = event_score + 0.2
+                    context_notes.append("escalated")
+                if any(mit in title for mit in mitigating_keywords):
+                    event_score = event_score - 0.3 # Subtracting more aggressively if it's resolved/averted
+                    context_notes.append("mitigated")
+
+                # Track the final math
+                score = score + event_score
+                
+                context_str = f"({','.join(context_notes)})" if context_notes else "(baseline)"
+                reason = f"{kw} {context_str}: {event_score:+.1f}"
+                if reason not in matched_reasons:
+                    matched_reasons.append(reason)
+
+    # Bound the score between 0.0 and 1.0
+    score = max(0.0, min(score, 1.0))
+    
+    if score > 0.0:
+        return True, f"Detection logic: {', '.join(matched_reasons)}. Final score limited to {score:.1f}", score
+                
+    if matched_reasons:
+        return False, f"Disruptions detected but fully mitigated: {', '.join(matched_reasons)}. Score net 0.0", 0.0
+        
+    return False, "No disruption keywords detected in recent headlines. Heuristic score 0.0", 0.0
 
 class DisruptionAnalysisOutput(BaseModel):
     disruption_index: float = Field(description="A score between 0.0 and 1.0 indicating signal noise vs actual supply chain disruption. 0.0 is perfect operation, 1.0 is total shutdown.")
     reasoning: str = Field(description="A brief summary of why this score was assigned based on the news.")
+    baseline_comparison: str = Field(description="Explicitly compare and contrast your Disruption Index reasoning against the provided naive baseline score.")

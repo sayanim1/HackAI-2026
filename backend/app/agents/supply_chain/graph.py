@@ -3,7 +3,7 @@ import json
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.graph import StateGraph, END
 from app.agents.supply_chain.state import SupplyChainState
-from app.agents.supply_chain.tools import fetch_supply_chain_news, get_alternative_hub, DisruptionAnalysisOutput
+from app.agents.supply_chain.tools import fetch_supply_chain_news, get_alternative_hub, DisruptionAnalysisOutput, run_keyword_baseline
 from dotenv import load_dotenv
 
 load_dotenv(".env.local")
@@ -44,13 +44,18 @@ def analyze_disruption(state: SupplyChainState) -> SupplyChainState:
         emit(json.dumps({"type": "status", "message": f"Skipping LLM analysis, no news."}))
         return {"disruption_index": 0.0, "analysis_reasoning": "No relevant disruption news found."}
 
+    baseline_alert, baseline_reasoning, baseline_score = run_keyword_baseline(articles)
+    
     emit(json.dumps({"type": "status", "message": f"Analyzing news sentiment and semantic context with Gemini 2.5 Pro..."}))
     
     prompt = f"""
     You are a Supply Chain Risk Analyst.
     Your task is to review the following recent news headlines about the port/region '{port}' and determine a "Disruption Index" score from 0.0 to 1.0. 
     Evaluate "Signal vs. Noise" (e.g. A local strike or typhoon is a signal. A routine port expansion is noise).
- 
+    
+    We also ran a simple keyword-matching baseline which gave this port a score of {baseline_score:.1f} because: {baseline_reasoning}.
+    In your analysis, briefly compare your advanced contextual reasoning to this simple baseline score. Why is your score more accurate?
+
     News Articles:
     {json.dumps(articles, indent=2)}
     """
@@ -61,7 +66,11 @@ def analyze_disruption(state: SupplyChainState) -> SupplyChainState:
     
     return {
         "disruption_index": result.disruption_index,
-        "analysis_reasoning": result.reasoning
+        "analysis_reasoning": result.reasoning,
+        "baseline_alert": baseline_alert,
+        "baseline_score": baseline_score,
+        "baseline_reasoning": baseline_reasoning,
+        "baseline_comparison": getattr(result, "baseline_comparison", "No comparison provided.")
     }
 
 def decide_action(state: SupplyChainState) -> SupplyChainState:
