@@ -47,7 +47,11 @@ class SignalOutput(BaseModel):
     reasoning: str = Field(description="A plain English reasoning for the signal.")
 
 def _get_gemini_client() -> genai.Client:
-    api_key = os.getenv("GEMINI_API_KEY")
+    try:
+        from api_secrets import GEMINI_API_KEY
+        api_key = GEMINI_API_KEY
+    except ImportError:
+        api_key = os.getenv("GEMINI_API_KEY")
     if not api_key:
         api_key = "MOCK_KEY"
     return genai.Client(api_key=api_key)
@@ -57,7 +61,12 @@ def intent_node(state: MarketAgentState) -> Dict:
     query = state["user_query"]
     
     # Check if we should use mocked data
-    api_key = os.getenv("GEMINI_API_KEY")
+    try:
+        from api_secrets import GEMINI_API_KEY
+        api_key = GEMINI_API_KEY
+    except ImportError:
+        api_key = os.getenv("GEMINI_API_KEY")
+
     if not api_key or api_key == "your_gemini_api_key_here":
         return {"ticker": "Mock Ticker", "sector": "Mock Sector"}
 
@@ -117,7 +126,16 @@ def fetch_data_node(state: MarketAgentState) -> Dict:
     else:
         query = sector
         
-    news = get_market_news(query=query if query else "finance")
+    # Identify filter keywords (ticker and sector)
+    filter_keywords = []
+    if ticker: filter_keywords.append(ticker)
+    if sector: filter_keywords.append(sector)
+    
+    news = get_market_news(
+        query=query if query else "finance", 
+        limit=10, 
+        filter_keywords=filter_keywords
+    )
     
     # Print news headlines for visibility in terminal
     print(f"\n--- Fetched News for {query} ---")
@@ -140,15 +158,47 @@ def sentiment_node(state: MarketAgentState) -> Dict:
     if not isinstance(news, list) or not news:
         return {"sentiments": []}
         
-    api_key = os.getenv("GEMINI_API_KEY")
+    try:
+        from api_secrets import GEMINI_API_KEY
+        api_key = GEMINI_API_KEY
+    except ImportError:
+        api_key = os.getenv("GEMINI_API_KEY")
+
     if not api_key or api_key == "your_gemini_api_key_here":
         # Mock sentiment
         sentiments = [{"headline": item["title"], "sentiment": "NEUTRAL"} for item in news]
         return {"sentiments": sentiments}
         
     headlines = [item["title"] for item in news]
-    prompt = f"Given these news headlines: {headlines}\n\n Classify the news headlines as high impact on stock prices, low impact on stock prices or neutral."
-    
+
+    prompt = f"""
+You are a seasoned Wall Street financial analyst with 20 years of experience 
+analyzing market-moving events. You specialize in identifying which news 
+catalysts will materially impact stock prices.
+
+Analyze the following news headlines and 
+think through each headline like you are preparing a morning briefing 
+for a portfolio manager.
+
+Headlines:
+{headlines}
+
+For each headline, reason through:
+- WHO is affected (company, sector, or macro-level?)
+- WHAT is the catalyst (earnings, regulation, macro, competition, management?)
+- WHY would this move the stock (multiple expansion, earnings revision, 
+  sentiment shift, liquidity event?)
+- HOW MUCH impact realistically (consider magnitude, not just direction)
+
+Classification rules:
+- HIGH IMPACT: Earnings surprises, Fed decisions, M&A activity, 
+  CEO/CFO changes, major lawsuits, guidance revision, product recalls,
+  regulatory approvals or bans, index additions/removals
+- LOW IMPACT: Analyst reiterations, minor partnerships, routine SEC filings,
+  industry conference appearances, immaterial contract wins
+- NEUTRAL: General market commentary, unrelated macro news, 
+  competitor news with no direct read-through, opinion pieces
+  """    
     client = _get_gemini_client()
     try:
         response = client.models.generate_content(
@@ -172,7 +222,12 @@ def signal_node(state: MarketAgentState) -> Dict:
         stock_data = {}
     ticker = state.get("ticker", "Market")
     
-    api_key = os.getenv("GEMINI_API_KEY")
+    try:
+        from api_secrets import GEMINI_API_KEY
+        api_key = GEMINI_API_KEY
+    except ImportError:
+        api_key = os.getenv("GEMINI_API_KEY")
+
     if not api_key or api_key == "your_gemini_api_key_here":
         return {
             "signal": "HOLD",

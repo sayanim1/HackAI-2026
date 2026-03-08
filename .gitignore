@@ -30,6 +30,7 @@ ENV/
 .env
 .env.local
 .env.*
+api_secrets.py
 
 # Databases
 *.sqlite3
