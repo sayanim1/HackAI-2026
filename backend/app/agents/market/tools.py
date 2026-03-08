@@ -1,9 +1,9 @@
-import yfinance as yf
-from newsapi import NewsApiClient
-import os
-import pandas as pd
-from typing import Dict, List, Any
-from datetime import datetime, timedelta
+import yfinance as yf # type: ignore # pyre-ignore
+from newsapi import NewsApiClient # type: ignore # pyre-ignore
+import os # type: ignore # pyre-ignore
+import pandas as pd # type: ignore # pyre-ignore
+from typing import Dict, List, Any # type: ignore # pyre-ignore
+from datetime import datetime, timedelta # type: ignore # pyre-ignore
 
 def get_stock_data(ticker: str, period: str = "1mo") -> Dict[str, Any]:
     """
@@ -35,10 +35,28 @@ def get_stock_data(ticker: str, period: str = "1mo") -> Dict[str, Any]:
             })
             
         current_price = hist['Close'].iloc[-1]
+        info = stock.info
         
+        def format_large_number(num):
+            if num == "N/A" or num is None: return "N/A"
+            try:
+                n = float(num)
+                if n >= 1e12: return f"{n/1e12:.2f}T"
+                if n >= 1e9: return f"{n/1e9:.2f}B"
+                if n >= 1e6: return f"{n/1e6:.2f}M"
+                return str(n)
+            except:
+                return str(num)
+
         return {
             "ticker": ticker,
             "current_price": current_price,
+            "company_name": info.get("shortName", ticker),
+            "market_cap": format_large_number(info.get("marketCap")),
+            "pe_ratio": round(info.get("trailingPE", 0), 2) if info.get("trailingPE") else "N/A",
+            "dividend_yield": f"{round(info.get('dividendYield', 0) * 100, 2)}%" if info.get("dividendYield") else "N/A",
+            "wk_high_52": round(info.get("fiftyTwoWeekHigh", 0), 2) if info.get("fiftyTwoWeekHigh") else "N/A",
+            "wk_low_52": round(info.get("fiftyTwoWeekLow", 0), 2) if info.get("fiftyTwoWeekLow") else "N/A",
             "history": records
         }
     except Exception as e:

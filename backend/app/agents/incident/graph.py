@@ -1,13 +1,13 @@
 from typing import TypedDict, List, Dict, Any, Literal
-from langgraph.graph import StateGraph, START, END
+from langgraph.graph import StateGraph, START, END # type: ignore # pyre-ignore
 from pydantic import BaseModel, Field
-from google import genai
+from google import genai # type: ignore # pyre-ignore
 from google.genai import types
 import os
 import json
 import logging
 
-from .tools import retrieve_similar_incidents
+from .tools import retrieve_similar_incidents # type: ignore # pyre-ignore
 
 logger = logging.getLogger(__name__)
 
@@ -91,8 +91,10 @@ def extraction_node(state: IncidentState) -> Dict:
         }
 
 def rag_node(state: IncidentState) -> Dict:
-    symptoms = " ".join(state.get("symptoms", []))
-    incident_type = state.get("incident_type", "")
+    symptoms_raw = state.get("symptoms", [])
+    symptoms_list = symptoms_raw if isinstance(symptoms_raw, list) else []
+    symptoms = " ".join(str(s) for s in symptoms_list)
+    incident_type = str(state.get("incident_type", ""))
     query = f"{incident_type} {symptoms}"
     
     historical_results = retrieve_similar_incidents(query)

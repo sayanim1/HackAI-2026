@@ -1,13 +1,13 @@
 from typing import TypedDict, List, Dict, Any, Literal
-from langgraph.graph import StateGraph, START, END
+from langgraph.graph import StateGraph, START, END # type: ignore # pyre-ignore
 from pydantic import BaseModel, Field
-from google import genai
-from google.genai import types
+from google import genai # type: ignore # pyre-ignore
+from google.genai import types # type: ignore # pyre-ignore
 import os
 import json
 import logging
 
-from .tools import get_stock_data, get_market_news
+from .tools import get_stock_data, get_market_news # type: ignore # pyre-ignore
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +16,7 @@ class MarketAgentState(TypedDict):
     messages: List[Dict[str, str]]
     user_query: str
     ticker: str | None
+    all_tickers: List[str]
     sector: str | None
     news_articles: List[Dict[str, str]]
     stock_data: Dict[str, Any]
@@ -23,15 +24,20 @@ class MarketAgentState(TypedDict):
     signal: str | None
     confidence: int | None
     risk_level: str | None
+    reasoning: str | None
     final_response: Dict[str, Any] | None
 
 # Pydantic schemas for Gemini Structured Output Output
 class IntentOutput(BaseModel):
-    ticker: str = Field(description="The stock ticker symbol if one is found in the user query.")
+    tickers: List[str] = Field(description="List of up to 3 stock ticker symbols found or inferred from the user query.")
     sector: str = Field(description="The market sector if one is found or implied in the user query.")
 
+class HeadlineSentiment(BaseModel):
+    headline: str
+    sentiment: str
+
 class SentimentOutput(BaseModel):
-    headline_sentiments: List[Dict[str, str]] = Field(
+    headline_sentiments: List[HeadlineSentiment] = Field(
         description="A list of dictionaries containing 'headline' and 'sentiment' (BULLISH, BEARISH, NEUTRAL).")
 
 class SignalOutput(BaseModel):
@@ -56,7 +62,16 @@ def intent_node(state: MarketAgentState) -> Dict:
         return {"ticker": "Mock Ticker", "sector": "Mock Sector"}
 
     client = _get_gemini_client()
-    prompt = f"Extract the stock ticker and market sector from the following message:\n\n{query}"
+    prompt = f"""
+Extract the stock tickers and market sector from the following user message:
+
+Message: "{query}"
+
+Instructions:
+1. If the user mentions a specific company, return its stock ticker symbol and its market sector.
+2. If the user mentions a broad sector or market (e.g., "oil market", "tech sector", "overall market") without a specific company, infer and return the top three most representative stock tickers or ETFs for that sector (e.g., ['XOM', 'CVX', 'USO'] for oil, ['SPY', 'QQQ', 'DIA'] for general market, ['AAPL', 'MSFT', 'NVDA'] for tech) along with the sector name.
+3. If no tickers can be inferred at all, leave the list empty, but try your best to provide relevant tickers/ETFs.
+"""
     
     try:
         response = client.models.generate_content(
@@ -68,27 +83,61 @@ def intent_node(state: MarketAgentState) -> Dict:
             ),
         )
         data = json.loads(response.text)
+        
+        # Handle backward compatibility logic
+        tickers = data.get("tickers", [])
+        
+        # Return the first ticker as standard 'ticker' for downstream graph state compatibility + chart,
+        # but also pass the full list as 'sector_tickers' or just replace ticker with the first element.
+        primary_ticker = tickers[0] if tickers else ""
+        
         return {
-            "ticker": data.get("ticker", ""),
-            "sector": data.get("sector", "")
+            "ticker": primary_ticker,
+            "sector": data.get("sector", ""),
+            "all_tickers": tickers # Adding this to easily format later
         }
     except Exception as e:
         logger.error(f"Intent Error: {e}")
-        return {"ticker": None, "sector": None}
+        return {"ticker": None, "sector": None, "all_tickers": []}
 
 def fetch_data_node(state: MarketAgentState) -> Dict:
     ticker = state.get("ticker")
+    all_tickers_raw = state.get("all_tickers", [])
+    if not isinstance(all_tickers_raw, list):
+        all_tickers_raw = []
+    all_tickers: List[str] = [str(t) for t in all_tickers_raw]
     sector = state.get("sector")
-    query = ticker if ticker else sector
     
+    # Build search query using all tickers if available, else fallback to primary ticker/sector
+    if all_tickers:
+        top_tickers = [all_tickers[i] for i in range(min(3, len(all_tickers)))]
+        query = " OR ".join(top_tickers) # News API handles OR
+    elif ticker:
+        query = ticker
+    else:
+        query = sector
+        
     news = get_market_news(query=query if query else "finance")
+    
+    # Print news headlines for visibility in terminal
+    print(f"\n--- Fetched News for {query} ---")
+    for article in news:
+        print(f"Headline: {article.get('title')}")
+    print("--------------------------------\n")
+
+    # Only fetch chart data for the top/primary stock
     stock_data = get_stock_data(ticker=ticker) if ticker else {}
+    
+    if ticker and "current_price" in stock_data:
+        print(f"--- Stock Data for {ticker} ---")
+        print(f"Current Price: {stock_data.get('current_price')}")
+        print("--------------------------------\n")
     
     return {"news_articles": news, "stock_data": stock_data}
 
 def sentiment_node(state: MarketAgentState) -> Dict:
     news = state.get("news_articles", [])
-    if not news:
+    if not isinstance(news, list) or not news:
         return {"sentiments": []}
         
     api_key = os.getenv("GEMINI_API_KEY")
@@ -98,7 +147,7 @@ def sentiment_node(state: MarketAgentState) -> Dict:
         return {"sentiments": sentiments}
         
     headlines = [item["title"] for item in news]
-    prompt = f"Given these news headlines: {headlines}\n\nClassify each as BULLISH, BEARISH, or NEUTRAL."
+    prompt = f"Given these news headlines: {headlines}\n\n Classify the news headlines as high impact on stock prices, low impact on stock prices or neutral."
     
     client = _get_gemini_client()
     try:
@@ -119,6 +168,8 @@ def sentiment_node(state: MarketAgentState) -> Dict:
 def signal_node(state: MarketAgentState) -> Dict:
     sentiments = state.get("sentiments", [])
     stock_data = state.get("stock_data", {})
+    if not isinstance(stock_data, dict):
+        stock_data = {}
     ticker = state.get("ticker", "Market")
     
     api_key = os.getenv("GEMINI_API_KEY")
@@ -160,21 +211,33 @@ def signal_node(state: MarketAgentState) -> Dict:
 
 def response_node(state: MarketAgentState) -> Dict:
     ticker = state.get("ticker", "Market")
+    all_tickers_raw = state.get("all_tickers", [])
+    if not isinstance(all_tickers_raw, list):
+        all_tickers_raw = []
+    all_tickers: List[str] = [str(t) for t in all_tickers_raw]
     sentiments = state.get("sentiments", [])
+    if not isinstance(sentiments, list):
+        sentiments = []
     
     # Format news bullets with sentiment formatting
     news_bullets = []
     for s in sentiments:
-        emoji = "🟢" if s.get("sentiment") == "BULLISH" else "🔴" if s.get("sentiment") == "BEARISH" else "🟡"
-        news_bullets.append(f"• {s.get('headline', 'News')} -> {emoji}")
+        if isinstance(s, dict):
+            emoji = "🟢" if s.get("sentiment") == "BULLISH" else "🔴" if s.get("sentiment") == "BEARISH" else "🟡"
+            news_bullets.append(f"• {s.get('headline', 'News')} -> {emoji}")
     
     signal = state.get("signal", "HOLD")
     confidence = state.get("confidence", 50)
     risk = state.get("risk_level", "MEDIUM")
     reasoning = state.get("reasoning", "")
     stock_data = state.get("stock_data", {})
+    if not isinstance(stock_data, dict):
+        stock_data = {}
+        
+    ticker_display = ", ".join(all_tickers[:3]) if len(all_tickers) > 1 else ticker # type: ignore # pyre-ignore
     
-    chat_reply = f"Based on recent news and trends, {ticker} shows roughly {signal} signals. {reasoning}"
+    # Format the chat response clearly including the reasoning
+    chat_reply = f"Based on recent news and trends, {ticker_display} shows roughly {signal} signals.\n\nReasoning: {reasoning}"
     
     chart_data = stock_data.get("history", [])
 
