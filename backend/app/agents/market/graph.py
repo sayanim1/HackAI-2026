@@ -6,6 +6,12 @@ from google.genai import types # type: ignore # pyre-ignore
 import os
 import json
 import logging
+import sys
+
+# Ensure backend root is in search path for api_secrets
+backend_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+if backend_root not in sys.path:
+    sys.path.append(backend_root)
 
 from .tools import get_stock_data, get_market_news # type: ignore # pyre-ignore
 
@@ -50,9 +56,12 @@ def _get_gemini_client() -> genai.Client:
     try:
         from api_secrets import GEMINI_API_KEY
         api_key = GEMINI_API_KEY
-    except ImportError:
+        # print("DEBUG: Successfully imported GEMINI_API_KEY from api_secrets")
+    except ImportError as e:
         api_key = os.getenv("GEMINI_API_KEY")
+        print(f"DEBUG: ImportError loading api_secrets in graph.py: {e}. Using env fallback.")
     if not api_key:
+        print("DEBUG: GEMINI_API_KEY is missing in graph.py. Using MOCK_KEY.")
         api_key = "MOCK_KEY"
     return genai.Client(api_key=api_key)
 
@@ -64,10 +73,12 @@ def intent_node(state: MarketAgentState) -> Dict:
     try:
         from api_secrets import GEMINI_API_KEY
         api_key = GEMINI_API_KEY
-    except ImportError:
+    except ImportError as e:
         api_key = os.getenv("GEMINI_API_KEY")
+        print(f"DEBUG: Intent Node - ImportError loading api_secrets: {e}")
 
     if not api_key or api_key == "your_gemini_api_key_here":
+        print("DEBUG: Intent Node - GEMINI_API_KEY is missing. Returning mock data.")
         return {"ticker": "Mock Ticker", "sector": "Mock Sector"}
 
     client = _get_gemini_client()
@@ -91,6 +102,7 @@ Instructions:
                 response_schema=IntentOutput,
             ),
         )
+        print(f"DEBUG: Intent Node Gemini Response: {response.text}")
         data = json.loads(response.text)
         
         # Handle backward compatibility logic
@@ -161,10 +173,12 @@ def sentiment_node(state: MarketAgentState) -> Dict:
     try:
         from api_secrets import GEMINI_API_KEY
         api_key = GEMINI_API_KEY
-    except ImportError:
+    except ImportError as e:
         api_key = os.getenv("GEMINI_API_KEY")
+        print(f"DEBUG: Sentiment Node - ImportError loading api_secrets: {e}")
 
     if not api_key or api_key == "your_gemini_api_key_here":
+        print("DEBUG: Sentiment Node - GEMINI_API_KEY is missing. Returning mock sentiments.")
         # Mock sentiment
         sentiments = [{"headline": item["title"], "sentiment": "NEUTRAL"} for item in news]
         return {"sentiments": sentiments}
@@ -209,6 +223,7 @@ Classification rules:
                 response_schema=SentimentOutput,
             ),
         )
+        print(f"DEBUG: Sentiment Node Gemini Response: {response.text}")
         data = json.loads(response.text)
         return {"sentiments": data.get("headline_sentiments", [])}
     except Exception as e:
@@ -225,10 +240,12 @@ def signal_node(state: MarketAgentState) -> Dict:
     try:
         from api_secrets import GEMINI_API_KEY
         api_key = GEMINI_API_KEY
-    except ImportError:
+    except ImportError as e:
         api_key = os.getenv("GEMINI_API_KEY")
+        print(f"DEBUG: Signal Node - ImportError loading api_secrets: {e}")
 
     if not api_key or api_key == "your_gemini_api_key_here":
+        print("DEBUG: Signal Node - GEMINI_API_KEY is missing. Returning mock signal.")
         return {
             "signal": "HOLD",
             "confidence": 50,
@@ -248,6 +265,7 @@ def signal_node(state: MarketAgentState) -> Dict:
                 response_schema=SignalOutput,
             ),
         )
+        print(f"DEBUG: Signal Node Gemini Response: {response.text}")
         data = json.loads(response.text)
         return {
             "signal": data.get("signal", "HOLD"),
