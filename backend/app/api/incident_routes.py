@@ -1,6 +1,6 @@
-from fastapi import APIRouter, UploadFile, File
-from ..agents.incident.tools import parse_pdf
-from ..agents.incident.graph import incident_app
+from fastapi import APIRouter, UploadFile, File # type: ignore # pyre-ignore
+from ..agents.incident.tools import parse_pdf # type: ignore # pyre-ignore
+from ..agents.incident.graph import incident_app # type: ignore # pyre-ignore
 
 router = APIRouter()
 

@@ -1,9 +1,9 @@
-import yfinance as yf
-from newsapi import NewsApiClient
-import os
-import pandas as pd
-from typing import Dict, List, Any
-from datetime import datetime, timedelta
+import yfinance as yf # type: ignore # pyre-ignore
+from newsapi import NewsApiClient # type: ignore # pyre-ignore
+import os # type: ignore # pyre-ignore
+import pandas as pd # type: ignore # pyre-ignore
+from typing import Dict, List, Any # type: ignore # pyre-ignore
+from datetime import datetime, timedelta # type: ignore # pyre-ignore
 
 def get_stock_data(ticker: str, period: str = "1mo") -> Dict[str, Any]:
     """

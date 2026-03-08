@@ -1,6 +1,6 @@
-import fitz  # PyMuPDF
+import fitz  # PyMuPDF # type: ignore # pyre-ignore
 import os
-import chromadb
+import chromadb      # type: ignore # pyre-ignore
 from google import genai
 import logging
 

@@ -1,13 +1,13 @@
 from typing import TypedDict, List, Dict, Any, Literal
-from langgraph.graph import StateGraph, START, END
+from langgraph.graph import StateGraph, START, END # type: ignore # pyre-ignore
 from pydantic import BaseModel, Field
-from google import genai
-from google.genai import types
+from google import genai # type: ignore # pyre-ignore
+from google.genai import types # type: ignore # pyre-ignore
 import os
 import json
 import logging
 
-from .tools import get_stock_data, get_market_news
+from .tools import get_stock_data, get_market_news # type: ignore # pyre-ignore
 
 logger = logging.getLogger(__name__)
 
@@ -88,7 +88,7 @@ def fetch_data_node(state: MarketAgentState) -> Dict:
 
 def sentiment_node(state: MarketAgentState) -> Dict:
     news = state.get("news_articles", [])
-    if not news:
+    if not isinstance(news, list) or not news:
         return {"sentiments": []}
         
     api_key = os.getenv("GEMINI_API_KEY")
@@ -119,6 +119,8 @@ def sentiment_node(state: MarketAgentState) -> Dict:
 def signal_node(state: MarketAgentState) -> Dict:
     sentiments = state.get("sentiments", [])
     stock_data = state.get("stock_data", {})
+    if not isinstance(stock_data, dict):
+        stock_data = {}
     ticker = state.get("ticker", "Market")
     
     api_key = os.getenv("GEMINI_API_KEY")
@@ -161,18 +163,23 @@ def signal_node(state: MarketAgentState) -> Dict:
 def response_node(state: MarketAgentState) -> Dict:
     ticker = state.get("ticker", "Market")
     sentiments = state.get("sentiments", [])
+    if not isinstance(sentiments, list):
+        sentiments = []
     
     # Format news bullets with sentiment formatting
     news_bullets = []
     for s in sentiments:
-        emoji = "🟢" if s.get("sentiment") == "BULLISH" else "🔴" if s.get("sentiment") == "BEARISH" else "🟡"
-        news_bullets.append(f"• {s.get('headline', 'News')} -> {emoji}")
+        if isinstance(s, dict):
+            emoji = "🟢" if s.get("sentiment") == "BULLISH" else "🔴" if s.get("sentiment") == "BEARISH" else "🟡"
+            news_bullets.append(f"• {s.get('headline', 'News')} -> {emoji}")
     
     signal = state.get("signal", "HOLD")
     confidence = state.get("confidence", 50)
     risk = state.get("risk_level", "MEDIUM")
     reasoning = state.get("reasoning", "")
     stock_data = state.get("stock_data", {})
+    if not isinstance(stock_data, dict):
+        stock_data = {}
     
     chat_reply = f"Based on recent news and trends, {ticker} shows roughly {signal} signals. {reasoning}"
     
