@@ -24,6 +24,11 @@ app.include_router(market_router, prefix="/api/market", tags=["Market Intelligen
 app.include_router(incident_router, prefix="/api/incident", tags=["Incident Analyst"])
 app.include_router(supply_chain_router, prefix="/api/supply_chain", tags=["Supply Chain Predictor"])
 
+@app.on_event("startup")
+def startup_event():
+    from .api.alerts_manager import alerts_manager
+    alerts_manager.start_monitoring()
+
 @app.get("/health")
 def health_check():
     return {"status": "ok"}

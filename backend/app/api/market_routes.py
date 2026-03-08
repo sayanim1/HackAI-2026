@@ -151,3 +151,11 @@ def get_news_classification(q: str = "market"):
         "news": classifications,
         "count": len(classifications)
     }
+
+@router.get("/alerts")
+def get_sector_alerts():
+    """
+    Returns the latest sector-based "Buy" alerts from the background monitor.
+    """
+    from .alerts_manager import alerts_manager
+    return alerts_manager.get_alerts()
