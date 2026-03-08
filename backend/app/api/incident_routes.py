@@ -8,6 +8,7 @@ router = APIRouter()
 
 class RawTextRequest(BaseModel):
     text: str
+    client_id: str
 
 class ConnectionManager:
     def __init__(self):
@@ -101,24 +102,28 @@ async def analyze_incident_report(
 @router.post("/analyze_text")
 async def analyze_incident_text(request: RawTextRequest):
     print(f"DEBUG: RECEIVED DIRECT TEXT LENGTH = {len(request.text)}")
-    print(f"DEBUG: FIRST 200 CHARS = {request.text[:200]}")
-    
-    init_historical_incidents()
+    await manager.send_json({"type": "status", "message": "Initializing vector database..."}, request.client_id)
+    await asyncio.to_thread(init_historical_incidents)
     
     initial_state = {
         "raw_text": request.text
     }
     
-    # Run synchronously for now since it is blocking, or we can use asyncio.to_thread if preferred.
-    result = incident_app.invoke(initial_state)
+    loop = asyncio.get_running_loop()
     
-    return result.get("final_response", {
+    # Run LangGraph workflow in background thread
+    result = await asyncio.to_thread(run_incident_graph, initial_state, request.client_id, loop)
+    
+    final_resp = result.get("final_response", {
         "severity": "Unknown",
         "incident_type": "Unknown",
         "timeline": "Unknown",
         "affected_systems": [],
         "root_causes": [],
         "next_actions": [],
-        "engineering_summary": "Error processing text.",
-        "llm_thought_process": "Error processing text."
+        "llm_thought_process": "Error processing text.",
+        "is_new_incident": False
     })
+    
+    await manager.send_json({"type": "complete", "data": final_resp}, request.client_id)
+    return {"success": True, "data": final_resp}

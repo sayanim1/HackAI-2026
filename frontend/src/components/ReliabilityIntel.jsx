@@ -22,7 +22,13 @@ export function ReliabilityIntel() {
       } else if (data.type === 'complete') {
         setIncidentData(data.data);
         setIsProcessing(false);
-        setStatusLogs(prev => [...prev, { time: new Date().toLocaleTimeString(), msg: "Incident analysis complete." }]);
+        const thoughtProcess = data.data.llm_thought_process || "";
+        const summary = thoughtProcess.length > 200 ? thoughtProcess.substring(0, 200) + "..." : thoughtProcess;
+        setStatusLogs(prev => [
+          ...prev, 
+          { time: new Date().toLocaleTimeString(), msg: "Incident analysis complete." },
+          { time: new Date().toLocaleTimeString(), msg: `Agent Summary: ${summary}` }
+        ]);
       }
     };
 
@@ -50,16 +56,17 @@ export function ReliabilityIntel() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ text: incidentText }),
+        body: JSON.stringify({ text: incidentText, client_id: wsRef.current.clientId }),
       });
       
-      const data = await response.json();
-      setIncidentData(data);
-      setStatusLogs(prev => [...prev, { time: new Date().toLocaleTimeString(), msg: "Incident analysis complete." }]);
+      const responseData = await response.json();
+      if (!responseData.success) {
+        throw new Error("API returned failure");
+      }
+      // Note: Data and status logs are populated via WebSocket events defined in the useEffect hook.
     } catch (error) {
       console.error("Analysis failed:", error);
       setStatusLogs(prev => [...prev, { time: new Date().toLocaleTimeString(), msg: "Error establishing connection to backend." }]);
-    } finally {
       setIsProcessing(false);
     }
   };
@@ -194,7 +201,7 @@ export function ReliabilityIntel() {
                    <div>
                      <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Affected Systems</div>
                      <div className="flex flex-wrap gap-2">
-                       {incidentData.affected_systems.length > 0 ? incidentData.affected_systems.map((sys, idx) => (
+                       {incidentData.affected_systems?.length > 0 ? incidentData.affected_systems.map((sys, idx) => (
                          <span key={idx} className="px-2 py-1 bg-slate-100 text-slate-700 text-xs font-semibold rounded">{sys}</span>
                        )) : <span className="text-sm text-slate-500">None detected</span>}
                      </div>
@@ -208,20 +215,23 @@ export function ReliabilityIntel() {
                 <div className="mb-8">
                    <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 text-left">Predicted Root Causes</div>
                    <div className="space-y-3">
-                     {incidentData.root_causes.map((causeObj, idx) => (
+                     {incidentData.root_causes?.map((causeObj, idx) => (
                        <div key={idx} className="flex items-center justify-between p-3 border border-slate-100 rounded-lg bg-slate-50">
-                          <span className="text-sm font-semibold text-slate-800 text-left">{causeObj.cause || typeof causeObj === 'string' ? causeObj.cause || causeObj : JSON.stringify(causeObj)}</span>
-                          {causeObj.confidence && (
+                          <span className="text-sm font-semibold text-slate-800 text-left">{causeObj?.cause || typeof causeObj === 'string' ? causeObj?.cause || causeObj : JSON.stringify(causeObj)}</span>
+                          {causeObj?.confidence && (
                             <span className="text-xs font-bold bg-white text-orange-600 px-2 py-1 rounded shadow-sm border border-slate-100">{causeObj.confidence}% Conf.</span>
                           )}
                        </div>
                      ))}
+                     {(!incidentData.root_causes || incidentData.root_causes.length === 0) && (
+                        <span className="text-sm text-slate-500">No root causes identified.</span>
+                     )}
                    </div>
                 </div>
 
                 <div className="flex-1">
                    <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3 text-left">Engineering Brief</div>
-                   <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 text-sm text-slate-700 font-mono whitespace-pre-wrap leading-relaxed">
+                   <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 text-sm text-slate-700 font-mono whitespace-pre-wrap leading-relaxed text-left">
                      {incidentData.engineering_summary}
                    </div>
                 </div>
