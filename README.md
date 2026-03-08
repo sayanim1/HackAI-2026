@@ -104,7 +104,7 @@ generates a **Risk Score (0–100)** with recommended procurement actions.
 
 ---
 
-### 📊 4. Sector Intelligence & Automated Alert System
+### 📊 4. Market Analysis & Automated Alert System
 **Problem:** Investors and analysts need a daily sector-wide performance
 briefing but cannot manually scan every stock and headline across multiple
 sectors every morning and evening.
@@ -161,48 +161,48 @@ NexusFlow Morning Sector Digest — March 8, 2026
                                  ▼
 ┌──────────────────────────────────────────────────────────────────────┐
 │                         FastAPI Backend                              │
-│  /market/chat  /incident/analyze  /port/risk  /sector/digest         │
+│  /market/chat  /incident/analyze  /port/risk  /market-analysis/digest         │
 └──────┬──────────────┬──────────────────┬──────────────┬─────────────┘
        │              │                  │              │
        ▼              ▼                  ▼              ▼
 ┌──────────┐  ┌──────────────┐  ┌─────────────┐  ┌────────────────┐
-│ Market   │  │  Incident    │  │  Port Risk  │  │ Sector Alert   │
+│ Market   │  │  Incident    │  │  Port Risk  │  │ Market Analysis│
 │ Pipeline │  │  Pipeline    │  │  Pipeline   │  │ Pipeline       │
 └────┬─────┘  └──────┬───────┘  └──────┬──────┘  └───────┬────────┘
      │                │                 │                  │
      ▼                ▼                 ▼                  ▼
 ┌─────────┐   ┌──────────────┐   ┌──────────┐   ┌────────────────┐
-│ Intent  │   │ Text File    │   │ Intent   │   │ Sector Sweep   │
-│ Agent   │   │ Parser Tool  │   │      │   │   Agent          │
+│ Intent  │   │ Text         │   │ Input    │   │ Market Sweep   │
+│         │   | Parser Tool  │   │ location |   │                │
 └─────────┘   └──────────────┘   └──────────┘   └────────────────┘
      │                │                 │                  │
      ▼                ▼                 ▼                  ▼
 ┌─────────┐   ┌──────────────┐   ┌──────────┐   ┌────────────────┐
 │News +   │   │ Extraction   │   │  News    │   │ Per-Sector     │
-│Price    │   │ Agent        │   │ Fetcher  │   │ News Fetcher   │
+│Price    │   │              │   │ Fetcher  │   │ News Fetcher   │
 │Fetcher  │   └──────────────┘   └──────────┘   └────────────────┘
 └─────────┘          │                 │                  │
      │          ┌────┴──────┐          ▼                  ▼
      ▼          │ RAG Tool  │   ┌──────────┐   ┌────────────────┐
 ┌─────────┐     │ (Chroma)  │   │  Risk    │   │ Performance    │
-│Sentiment│     └────┬──────┘   │  Score   │   │ Classifier     │
-│ Agent   │          │          │  Agent   │   │ Agent          │
+│Stock Risk     └────┬──────┘   │  Score   │   │ Classifier     │
+│AnalysisAgent       │          │          │   |    Agent       │
 └─────────┘          ▼          └──────────┘   └────────────────┘
      │        ┌──────────────┐        │                  │
      ▼        │ Root Cause   │        ▼                  ▼
-┌─────────┐   │ Agent        │  ┌──────────┐   ┌────────────────┐
-│ Signal  │   └──────────────┘  │  Action  │   │Recommendation  │
-│ Agent   │          │          │  Agent   │   │ Agent          │
+┌─────────┐   │   Analysis   │  ┌──────────┐   ┌────────────────┐
+│ Recomm. │   └──────────────┘  │  Action  │   │Recommendation  │
+│ Agent   │          │          │  Agent   │   │                │
 └─────────┘          ▼          └──────────┘   └────────────────┘
                 ┌──────────────┐                          │
                 │ Action       │                          ▼
                 │ Planner      │               ┌────────────────┐
                 └──────────────┘               │ Alert Composer │
-                      │                        │ Agent          │
+                      │                        │                │
                       ▼                        └───────┬────────┘
                 ┌──────────────┐                       │
-                │ Summarizer   │                       ▼
-                │ Agent        │              ┌────────────────┐
+                │ Summarizer   |                       ▼
+                │              │              ┌────────────────┐
                 └──────────────┘              │ Email Dispatch │
                                               └────────────────┘
                       │
@@ -384,15 +384,6 @@ Context passed to Gemini analyzer node
 
 ---
 
-## The Four Agents — In Depth
-
-The pipeline flows above show the data path. This section describes each agent's role, decision logic, and how it fits the "make the decision explicit" principle.
-
----
-
-## 🔔 Agent 4: Sector Intelligence Agent (Autonomous)
-
-Unlike the other three agents which respond to user input, this agent **perceives, reasons, and acts on its own schedule** without any human trigger.
 
 
 | Property | Detail |
@@ -406,16 +397,6 @@ Unlike the other three agents which respond to user input, this agent **perceive
 | **Fallback** | Logs the full report to console if SMTP is not configured |
 | **Manual override** | `POST /api/market/alerts/send-email` from the frontend |
 
-**Explicit Decision Rule:**
-```
-For each sector in [Technology, Finance, Energy]:
-  headlines = NewsAPI.fetch(sector_keywords)
-  signal = Gemini(headlines) → BUY | WATCH | SELL  ← constrained enum
-
-After all 3 sectors processed:
-  → Format HTML report
-  → Dispatch via SMTP (or log if unconfigured)
-```
 
 ---
 
