@@ -13,6 +13,8 @@ async def chat_with_market_agent(request: ChatRequest):
         "messages": [{"role": "user", "content": request.message}],
         "user_query": request.message
     }
+
+    print(initial_state["messages"])
     
     # Run LangGraph workflow
     result = market_app.invoke(initial_state)

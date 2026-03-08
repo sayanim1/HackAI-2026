@@ -1,11 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
+load_dotenv(".env.local")
 
 from .api.market_routes import router as market_router
 from .api.incident_routes import router as incident_router
-
-load_dotenv()
 
 app = FastAPI(
     title="TriageIQ Unified Intelligence Platform",
