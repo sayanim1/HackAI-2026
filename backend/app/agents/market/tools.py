@@ -7,6 +7,12 @@ from datetime import datetime, timedelta # type: ignore # pyre-ignore
 from google import genai # type: ignore # pyre-ignore
 from google.genai import types # type: ignore # pyre-ignore
 import json
+import sys
+
+# Ensure backend root is in search path for api_secrets
+backend_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+if backend_root not in sys.path:
+    sys.path.append(backend_root)
 
 def get_stock_data(ticker: str, period: str = "1mo") -> Dict[str, Any]:
     """
@@ -73,12 +79,15 @@ def get_market_news(query: str, limit: int = 10, filter_keywords: List[str] = No
     try:
         from api_secrets import NEWSAPI_KEY
         api_key = NEWSAPI_KEY
-    except ImportError:
+        # print("DEBUG: Successfully imported NEWSAPI_KEY from api_secrets")
+    except ImportError as e:
         api_key = os.getenv("NEWSAPI_KEY")
+        print(f"DEBUG: ImportError loading api_secrets in tools.py: {e}. Using env fallback.")
 
     if not api_key or api_key == "your_newsapi_key_here":
+        print("DEBUG: NEWSAPI_KEY is missing or remains default in tools.py. Returning mock news.")
         return [{"title": "Mock News Title", "source": "Mock Source", "snippet": "Mock Snippet due to missing API key."}]
-        
+
     try:
         newsapi = NewsApiClient(api_key=api_key)
         
@@ -97,6 +106,7 @@ def get_market_news(query: str, limit: int = 10, filter_keywords: List[str] = No
         )
         
         articles = all_articles.get('articles', [])
+        print(f"DEBUG: NewsAPI returned {len(articles)} articles for query '{query}'")
         
         result = []
         for article in articles:
