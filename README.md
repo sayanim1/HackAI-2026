@@ -95,7 +95,7 @@ procurement.
 
 **Solution:** The agent monitors live news for port disruptions, trade policy
 changes, and logistics events. It maps events to affected supply routes and
-generates a **Risk Score (0–100)** with recommended procurement actions.
+generates a **Risk Score (0–1)** with recommended procurement actions and automated email alerts with recommended actions with human intervention.
 
 **Example:**
 > *"What is the current risk for procurement from Shanghai?"*
@@ -110,7 +110,7 @@ briefing but cannot manually scan every stock and headline across multiple
 sectors every morning and evening.
 
 **Solution:** NexusFlow automatically runs a **twice-daily sector sweep** at
-market open (9 AM) and market close (5 PM). For each major sector it fetches
+market open  and market close. For each major sector it fetches
 the top headlines, classifies stocks as top-performing or low-performing, and
 generates a structured sector summary with BUY/WATCH/AVOID recommendations.
 These digests are pushed as **automated email alerts** to subscribed users.
@@ -416,3 +416,6 @@ Context passed to Gemini analyzer node
 <img width="1919" height="830" alt="image (3)" src="https://github.com/user-attachments/assets/30f8aa26-d276-4f0c-a8df-5ec3169fcca4" />
 <img width="1440" height="814" alt="Screenshot 2026-03-08 at 07 12 06" src="https://github.com/user-attachments/assets/b13eb439-4fcf-4886-ad13-8a20b675a339" />
 
+
+
+**Demo Video**: https://youtu.be/OV4_fNzh594
